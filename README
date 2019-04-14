@@ -1,0 +1,4 @@
+Ideas:
+
+- ifxOpt class is the main controller and container that holds items added by user
+- few default validation methods + possibility for user to pass functor to validate value
