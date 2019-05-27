@@ -28,11 +28,10 @@ public:
                                            const char optShort,
                                            T &target);
 
-// TODO:
-//    template <typename T> void addOptEntry(const std::string  optLong,
-//                                           const char optShort,
-//                                           T &target,
-//                                           validationFuntion??);
+    template <typename T> void addOptEntry(const std::string  optLong,
+                                           const char optShort,
+                                           T &target,
+                                           Validator<T> &validatorFn);
 
     int parseOpt(int argc, char* argv[]);
 };
