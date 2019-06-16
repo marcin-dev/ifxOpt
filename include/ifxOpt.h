@@ -21,6 +21,8 @@ class Opt
 private:
     std::vector<OptEntry *> entries;
 
+    const char *getOption(const char* in, std::string &argStr, char &argChar);
+
 public:
     Opt();
     virtual ~Opt();
@@ -34,7 +36,7 @@ public:
                                            T &target,
                                            Validator<T> &validatorFn);
 
-    int parseOpt(int argc, char* argv[]);
+    int parseOpt(int argc, const char* argv[]);
 };
 
 } /* namespace ifx */

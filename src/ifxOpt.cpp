@@ -10,10 +10,12 @@
 // Type specific option parsers:
 #include "ifxOptEntryInt.h"
 
+#include <iostream>
+
 namespace ifx
 {
 
-Opt::Opt() : entries(10) // we start from 10 options for now
+Opt::Opt() : entries() // we start from 10 options for now
 {
     // TODO Auto-generated constructor stub
 }
@@ -23,11 +25,45 @@ Opt::~Opt()
     // TODO Auto-generated destructor stub
 }
 
+const char *Opt::getOption(const char* in, std::string &argStr, char &argChar)
+{
+    argChar = 0;
+    argStr.clear();
+
+    if (*in == '-')
+    {
+        in++;
+
+        if (*in == '-')
+        {
+            in++;
+            // Long opt
+            argStr = std::string(in);
+        }
+        else
+        {
+            // Short opt
+            argChar = *in++;
+        }
+    }
+    else
+    {
+        argStr = std::string(in);
+    }
+
+    return in;
+}
+
+// ****************************************************************************
+// Option type generic template
+// ****************************************************************************
+
 template <typename T> void Opt::addOptEntry(const std::string  optLong,
                                        const char optShort,
                                        T &target)
 {
     // TODO different implementation for basic types
+    std::cout << "Opt::addOptEntry3 <>" << std::endl;
 }
 
 template <typename T> void Opt::addOptEntry(const std::string  optLong,
@@ -36,13 +72,19 @@ template <typename T> void Opt::addOptEntry(const std::string  optLong,
                                        Validator<T> &validatorFn)
 {
     // TODO different implementation for basic types
+    std::cout << "Opt::addOptEntry4 <>" << std::endl;
 }
 
+// ****************************************************************************
 // Option type: int
-template <> void Opt::addOptEntry <int> (const std::string  optLong,
-                                         const char optShort,
-                                         int &target)
+// ****************************************************************************
+
+template <> void Opt::addOptEntry<int> (const std::string  optLong,
+                                     const char optShort,
+                                     int &target)
 {
+    std::cout << "Opt::addOptEntry3 <int> START" << std::endl;
+
     OptEntryInt *opt = new OptEntryInt(optLong, optShort, target);
     if (opt != nullptr)
     {
@@ -51,13 +93,22 @@ template <> void Opt::addOptEntry <int> (const std::string  optLong,
         //entries.push_back((OptEntry *)(opt));
     }
     // else TODO: some error mechanism
+
+    std::cout << "Opt::addOptEntry3 <int> END" << std::endl;
 }
 
-template <> void Opt::addOptEntry <int> (const std::string  optLong,
-                                         const char optShort,
-                                         int &target,
-                                         Validator<int> &validatorFn)
+// Add defintion to avoid linker errors
+template void Opt::addOptEntry<int> (const std::string  optLong,
+                                     const char optShort,
+                                     int &target);
+
+template <> void Opt::addOptEntry<int> (const std::string  optLong,
+                                     const char optShort,
+                                     int &target,
+                                     Validator<int> &validatorFn)
 {
+    std::cout << "Opt::addOptEntry4 <int> START" << std::endl;
+
     OptEntryInt *opt = new OptEntryInt(optLong, optShort, target, validatorFn);
     if (opt != nullptr)
     {
@@ -66,45 +117,96 @@ template <> void Opt::addOptEntry <int> (const std::string  optLong,
         //entries.push_back((OptEntry *)(opt));
     }
     // else TODO: some error mechanism
+
+    std::cout << "Opt::addOptEntry4 <int> END" << std::endl;
 }
 
-int Opt::parseOpt(int argc, char* argv[])
+// Add definition to avoid linker errors
+template void Opt::addOptEntry<int> (const std::string  optLong,
+                                     const char optShort,
+                                     int &target,
+                                     Validator<int> &validatorFn);
+
+int Opt::parseOpt(int argc, const char* argv[])
 {
     int retVal = 0;
-    std::string argstr;
-    std::string valstr;
+    const char  *argvPtr;
+    std::string  argStr;
+    std::string  valStr;
+    char         argChar;
 
     // TODO:
     // trim each argv
     // add some bool or whatever to state whether option value is mandatory (is this needed?)
     // default value for each option?
 
-    for (int i = 0; i < argc; i++)
-    {
-        //for (auto&& e : entries)
-        for (OptEntry *&e : entries)
-        {
-            retVal = e->parseOpt(argstr, valstr); // TODO: is this ok?
+    std::cout << "Opt::parseOpt START, argc = " << argc << std::endl;
 
-            if (retVal > 0)
+    for (int i = 1; i < argc; i++)
+    {
+        argvPtr = this->getOption(argv[i], argStr, argChar);
+
+        // Test if option found
+        if (argvPtr != argv[i])
+        {
+            // option found, get value
+            std::cout << "Opt::parseOpt option found, long: " << argStr << ", short: " << argChar << std::endl;
+
+            // TODO: value optional or mandatory?
+
+//            if (   argc > i+1
+//                && (valPtr = this->getOption(argv[i+1], valStr, valChar)) == argv[i+1])
+            if (argc > i+1)
             {
-                // Not matching string, go to the next element
-                continue;
+                // Some string present, maybe value, get it for parsing
+                // Move iterator
+                i++;
+                std::cout << "Opt::parseOpt potential value string found: " << argv[i] << std::endl;
+                valStr = std::string(argv[i]);
             }
             else
             {
-                // Found match and extracted the value successfully
-                // Or parsing error
+                // No value string, need to trigger error if value is mandatory
+                std::cout << "Opt::parseOpt no value found" << std::endl;
+                valStr = std::string("");
+
+                // TODO: trigger error if the value is mandatory
+            }
+
+            //for (auto&& e : entries)
+            for (OptEntry *e : entries)
+            {
+                std::cout << "optEntry START" << std::endl;
+                retVal = e->parseOpt(argStr, argChar, valStr); // TODO: is this ok?
+                std::cout << "optEntry END" << std::endl;
+
+                if (retVal > 0)
+                {
+                    // Not matching string, go to the next element
+                    continue;
+                }
+                else
+                {
+                    // Found match and extracted the value successfully
+                    // Or parsing error
+                    break;
+                }
+            }
+
+            if (retVal < 0)
+            {
+                // Parsing error, need to exit
                 break;
             }
         }
-
-        if (retVal < 0)
+        else
         {
-            // Parsing error, need to exit
-            break;
+            // Option not found, we have got string to store
+            std::cout << "Opt::parseOpt option not found, argv: " << argStr << ", short: " << argChar << std::endl;
         }
     }
+
+    std::cout << "Opt::parseOpt END, return code = " << retVal << std::endl;
 
     return retVal;
 }

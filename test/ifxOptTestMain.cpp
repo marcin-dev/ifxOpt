@@ -9,10 +9,36 @@
 
 #include <ifxOpt.h>
 
+#define LOG_TAG     " >>> [IFX TEST] "
 
-int main(int argc, char **argv)
+int parseOpt(int argc, const char **argv)
 {
-    std::cout << "We are starting!" << std::endl;
+    ifx::Opt opt;
+    int number;
+    int retVal;
 
-    return 0;
+    opt.addOptEntry<int>("number", 'n', number);
+
+    retVal = opt.parseOpt(argc, argv);
+
+    if (retVal == 0)
+    {
+        std::cout << LOG_TAG "parsed number: " << number << std::endl;
+    }
+
+    return retVal;
+}
+
+
+int main(int argc, const char **argv)
+{
+    int retVal;
+
+    std::cout << LOG_TAG "START" << std::endl;
+
+    retVal = parseOpt(argc, argv);
+
+    std::cout << LOG_TAG "END, return code = " << retVal << std::endl;
+
+    return retVal;
 }

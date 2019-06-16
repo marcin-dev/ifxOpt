@@ -9,6 +9,7 @@
 #define INCLUDE_IFXOPT_ENTRY_H
 
 #include <string>
+#include <iostream>
 
 namespace ifx
 {
@@ -21,23 +22,35 @@ private:
 
 public:
     OptEntry(const std::string  optLong,
-             const char optShort);
-    virtual ~OptEntry();
+             const char optShort)
+            : optLong(optLong), optShort(optShort)
+            { }
+    virtual ~OptEntry()
+            { }
 
-    int parseOpt(const std::string &valarg, const std::string &valstr)
+    int parseOpt(const std::string &argStr, const char argShort, const std::string &valStr)
     {
+        std::cout << "parseOpt(argStr=" << argStr << ", argShort=" << argShort << ", valStr=" << valStr << ")" << std::endl;
+
         int retVal = 1; // by default - not matching string
 
-        if (   valarg == std::string(1, optShort)
-            || valarg == optLong)
+        std::cout << "optLong: " << this->optLong << ", optShort: " << this->optShort << std::endl;
+
+        if (   this->optLong.compare(argStr) == 0
+            || this->optShort == argShort )
         {
-            retVal = this->parseOpt(valstr); // run the second virtual method to parse value
+            std::cout << "parseOpt MATCH" << std::endl;
+            retVal = this->parseOpt(valStr); // run the second virtual method to parse value
+        }
+        else
+        {
+            std::cout << "parseOpt NOT MATCH" << std::endl;
         }
 
         return retVal;
     }
 
-    virtual int parseOpt(const std::string &valstr) = 0;
+    virtual int parseOpt(const std::string &valStr) = 0;
 };
 
 } /* namespace ifx */

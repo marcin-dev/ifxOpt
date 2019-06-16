@@ -30,13 +30,14 @@ private:
     static DefaultValidator<int>  defaultValidator;  // static, it may be shared between all objects
 
 public:
+    //static DefaultValidator<int>  defaultValidator;  // static, it may be shared between all objects
     OptEntryInt(const std::string  optLong,
                 const char optShort,
                 int &target,
                 Validator<int> &validator = defaultValidator);
     virtual ~OptEntryInt();
 
-    virtual int parseOpt(const std::string &valstr);
+    virtual int parseOpt(const std::string &valStr);
 };
 
 } /* namespace ifx */
