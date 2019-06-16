@@ -11,13 +11,28 @@
 
 #define LOG_TAG     " >>> [IFX TEST] "
 
+bool validateNumber(int val)
+{
+    std::cout << LOG_TAG "validateNumber" << std::endl;
+
+    if (val >= -10 && val <=10)
+        return true;
+
+    return false;
+}
+
 int parseOpt(int argc, const char **argv)
 {
     ifx::Opt opt;
     int number;
     int retVal;
 
-    opt.addOptEntry<int>("number", 'n', number);
+    //ifx::Custom2Validator<int, validateNumber> cv;
+
+    //opt.addOptEntry<int>("number", 'n', number, ifx::Custom2Validator<int, validateNumber>::get(&validateNumber));
+    //opt.addOptEntry<int>("number", 'n', number, ifx::Custom2Validator<int, validateNumber>());
+
+    opt.addOptEntry<int>("number", 'n', number, validateNumber);
 
     retVal = opt.parseOpt(argc, argv);
 

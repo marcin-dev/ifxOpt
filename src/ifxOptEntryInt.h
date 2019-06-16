@@ -26,7 +26,7 @@ class OptEntryInt : public OptEntry
 {
 private:
     int               &target;
-    Validator<int>    &validator;
+    Validator<int>     validator;
     static DefaultValidator<int>  defaultValidator;  // static, it may be shared between all objects
 
 public:
@@ -34,7 +34,7 @@ public:
     OptEntryInt(const std::string  optLong,
                 const char optShort,
                 int &target,
-                Validator<int> &validator = defaultValidator);
+                Validator<int> validator = defaultValidator);
     virtual ~OptEntryInt();
 
     virtual int parseOpt(const std::string &valStr);

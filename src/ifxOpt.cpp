@@ -69,7 +69,7 @@ template <typename T> void Opt::addOptEntry(const std::string  optLong,
 template <typename T> void Opt::addOptEntry(const std::string  optLong,
                                        const char optShort,
                                        T &target,
-                                       Validator<T> &validatorFn)
+                                       Validator<T> validatorFn)
 {
     // TODO different implementation for basic types
     std::cout << "Opt::addOptEntry4 <>" << std::endl;
@@ -105,7 +105,7 @@ template void Opt::addOptEntry<int> (const std::string  optLong,
 template <> void Opt::addOptEntry<int> (const std::string  optLong,
                                      const char optShort,
                                      int &target,
-                                     Validator<int> &validatorFn)
+                                     Validator<int> validatorFn)
 {
     std::cout << "Opt::addOptEntry4 <int> START" << std::endl;
 
@@ -125,7 +125,7 @@ template <> void Opt::addOptEntry<int> (const std::string  optLong,
 template void Opt::addOptEntry<int> (const std::string  optLong,
                                      const char optShort,
                                      int &target,
-                                     Validator<int> &validatorFn);
+                                     Validator<int> validatorFn);
 
 int Opt::parseOpt(int argc, const char* argv[])
 {

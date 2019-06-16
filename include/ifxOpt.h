@@ -34,7 +34,7 @@ public:
     template <typename T> void addOptEntry(const std::string  optLong,
                                            const char optShort,
                                            T &target,
-                                           Validator<T> &validatorFn);
+                                           Validator<T> validatorFn);
 
     int parseOpt(int argc, const char* argv[]);
 };

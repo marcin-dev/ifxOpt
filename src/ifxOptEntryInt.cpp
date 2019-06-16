@@ -19,7 +19,7 @@ DefaultValidator<int>  OptEntryInt::defaultValidator;
 OptEntryInt::OptEntryInt(const std::string  optLong,
                          const char optShort,
                          int &target,
-                         Validator<int> &validator) : OptEntry(optLong, optShort), target(target), validator(validator)
+                         Validator<int> validator) : OptEntry(optLong, optShort), target(target), validator(validator)
 { }
 
 OptEntryInt::~OptEntryInt()
@@ -43,11 +43,12 @@ int OptEntryInt::parseOpt(const std::string &valStr)
         if (   val <= INT_MAX
             && val >= INT_MIN)
         {
+            int temp = static_cast<int>(val);
             // Good range, run validation procedure
-            if (this->validator(static_cast<int>(val)) == true)
+            if (this->validator(temp) == true)
             {
                 // Validation ok, store the value in target reference
-                this->target = static_cast<int>(val);
+                this->target = temp;
                 std::cout << "OptEntryInt Successfully extracted value, target=" << this->target << std::endl;
             }
             else
