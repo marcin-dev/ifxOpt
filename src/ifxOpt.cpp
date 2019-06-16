@@ -77,11 +77,12 @@ int Opt::parseOpt(int argc, char* argv[])
     // TODO:
     // trim each argv
     // add some bool or whatever to state whether option value is mandatory (is this needed?)
-    // default value for eatch option?
+    // default value for each option?
 
     for (int i = 0; i < argc; i++)
     {
-        for (auto&& e : entries)
+        //for (auto&& e : entries)
+        for (OptEntry *&e : entries)
         {
             retVal = e->parseOpt(argstr, valstr); // TODO: is this ok?
 

@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#include <ifxOpt.h>
+
 
 int main(int argc, char **argv)
 {

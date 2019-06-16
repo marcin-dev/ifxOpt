@@ -13,13 +13,6 @@
 namespace ifx
 {
 
-template <typename T> class Validator
-{
-    Validator() {}
-    virtual ~Validator() {}
-    virtual bool operator() (T argVal) = 0;
-};
-
 class OptEntry
 {
 private:
@@ -35,7 +28,7 @@ public:
     {
         int retVal = 1; // by default - not matching string
 
-        if (   valarg == optShort
+        if (   valarg == std::string(1, optShort)
             || valarg == optLong)
         {
             retVal = this->parseOpt(valstr); // run the second virtual method to parse value
