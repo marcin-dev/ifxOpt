@@ -19,7 +19,7 @@ DefaultValidator<int>  OptEntryInt::defaultValidator;
 OptEntryInt::OptEntryInt(const std::string  optLong,
                          const char optShort,
                          int &target,
-                         Validator<int> validator) : OptEntry(optLong, optShort), target(target), validator(validator)
+                         Validator<int> &validator) : OptEntry(optLong, optShort), target(target), validator(validator)
 { }
 
 OptEntryInt::~OptEntryInt()

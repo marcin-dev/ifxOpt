@@ -33,6 +33,7 @@ int parseOpt(int argc, const char **argv)
     //opt.addOptEntry<int>("number", 'n', number, ifx::Custom2Validator<int, validateNumber>());
 
     opt.addOptEntry<int>("number", 'n', number, validateNumber);
+    //opt.addOptEntry<int>("number", 'n', number); // will use default validator
 
     retVal = opt.parseOpt(argc, argv);
 

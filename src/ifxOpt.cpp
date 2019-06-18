@@ -88,9 +88,7 @@ template <> void Opt::addOptEntry<int> (const std::string  optLong,
     OptEntryInt *opt = new OptEntryInt(optLong, optShort, target);
     if (opt != nullptr)
     {
-        //entries.push_back(opt);
         entries.push_back(dynamic_cast<OptEntry *>(opt));
-        //entries.push_back((OptEntry *)(opt));
     }
     // else TODO: some error mechanism
 
@@ -112,9 +110,7 @@ template <> void Opt::addOptEntry<int> (const std::string  optLong,
     OptEntryInt *opt = new OptEntryInt(optLong, optShort, target, validatorFn);
     if (opt != nullptr)
     {
-        //entries.push_back(opt);
         entries.push_back(dynamic_cast<OptEntry *>(opt));
-        //entries.push_back((OptEntry *)(opt));
     }
     // else TODO: some error mechanism
 
@@ -154,8 +150,6 @@ int Opt::parseOpt(int argc, const char* argv[])
 
             // TODO: value optional or mandatory?
 
-//            if (   argc > i+1
-//                && (valPtr = this->getOption(argv[i+1], valStr, valChar)) == argv[i+1])
             if (argc > i+1)
             {
                 // Some string present, maybe value, get it for parsing

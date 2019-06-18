@@ -20,6 +20,8 @@ private:
     const std::string  optLong;
     const char         optShort;
 
+    virtual int parseOpt(const std::string &valStr) = 0;
+
 public:
     OptEntry(const std::string  optLong,
              const char optShort)
@@ -49,8 +51,6 @@ public:
 
         return retVal;
     }
-
-    virtual int parseOpt(const std::string &valStr) = 0;
 };
 
 } /* namespace ifx */
