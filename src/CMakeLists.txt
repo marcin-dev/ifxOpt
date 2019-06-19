@@ -3,6 +3,8 @@ set(target_name  ifxOpt)
 
 set(source_files
     ifxOpt.cpp
+    #ifxValidator.cpp
+    ifxOptEntry.cpp
     ifxOptEntryInt.cpp
     )
 

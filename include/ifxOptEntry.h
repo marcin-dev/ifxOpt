@@ -11,46 +11,78 @@
 #include <string>
 #include <iostream>
 
+#include "ifxValidator.h"
+
 namespace ifx
 {
 
-class OptEntry
+class OptEntryBase
 {
 private:
     const std::string  optLong;
     const char         optShort;
 
+public:
+    OptEntryBase(const std::string  optLong,
+                 const char optShort);
+    virtual ~OptEntryBase();
+
+    int parseOpt(const std::string &argStr, const char argShort, const std::string &valStr);
+
     virtual int parseOpt(const std::string &valStr) = 0;
+};
+
+template <typename T>
+class OptEntry : public OptEntryBase
+{
+protected:
+    T                 &target;
+    Validator<int>    *validator;
 
 public:
     OptEntry(const std::string  optLong,
-             const char optShort)
-            : optLong(optLong), optShort(optShort)
-            { }
+             const char optShort,
+             T &target,
+             Validator<int> *validator = nullptr)
+             : OptEntryBase(optLong, optShort), target(target), validator(validator)
+    {}
+
     virtual ~OptEntry()
-            { }
-
-    int parseOpt(const std::string &argStr, const char argShort, const std::string &valStr)
     {
-        std::cout << "parseOpt(argStr=" << argStr << ", argShort=" << argShort << ", valStr=" << valStr << ")" << std::endl;
-
-        int retVal = 1; // by default - not matching string
-
-        std::cout << "optLong: " << this->optLong << ", optShort: " << this->optShort << std::endl;
-
-        if (   this->optLong.compare(argStr) == 0
-            || this->optShort == argShort )
+        if (validator != nullptr)
         {
-            std::cout << "parseOpt MATCH" << std::endl;
-            retVal = this->parseOpt(valStr); // run the second virtual method to parse value
+            delete validator;
         }
-        else
+    }
+
+    virtual int parseOpt(const std::string &valStr)
+    {
+        int retVal;
+        T   value;
+
+        retVal = this->parseValue(valStr, value);
+
+        if (retVal == 0)
         {
-            std::cout << "parseOpt NOT MATCH" << std::endl;
+            // Good extraction, run validation procedure
+            if (   this->validator == nullptr
+                || (*this->validator)(value) == true)
+            {
+                // Validation ok, store the value in target reference
+                this->target = value;
+                std::cout << "OptEntryInt Successfully extracted value, target=" << this->target << std::endl;
+            }
+            else
+            {
+                retVal = -3; // validation error
+                std::cout << "OptEntryInt validation error for value" << std::endl;
+            }
         }
 
         return retVal;
     }
+
+    virtual int parseValue(const std::string &valStr, T &value) = 0;
 };
 
 } /* namespace ifx */

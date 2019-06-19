@@ -69,7 +69,7 @@ template <typename T> void Opt::addOptEntry(const std::string  optLong,
 template <typename T> void Opt::addOptEntry(const std::string  optLong,
                                        const char optShort,
                                        T &target,
-                                       Validator<T> validatorFn)
+                                       Validator<T> *validatorFn)
 {
     // TODO different implementation for basic types
     std::cout << "Opt::addOptEntry4 <>" << std::endl;
@@ -85,32 +85,32 @@ template <> void Opt::addOptEntry<int> (const std::string  optLong,
 {
     std::cout << "Opt::addOptEntry3 <int> START" << std::endl;
 
-    OptEntryInt *opt = new OptEntryInt(optLong, optShort, target);
+    OptEntryBase *opt = new OptEntryInt(optLong, optShort, target);
     if (opt != nullptr)
     {
-        entries.push_back(dynamic_cast<OptEntry *>(opt));
+        entries.push_back(opt);
     }
     // else TODO: some error mechanism
 
     std::cout << "Opt::addOptEntry3 <int> END" << std::endl;
 }
 
-// Add defintion to avoid linker errors
+// Add definition to avoid linker errors
 template void Opt::addOptEntry<int> (const std::string  optLong,
                                      const char optShort,
                                      int &target);
 
 template <> void Opt::addOptEntry<int> (const std::string  optLong,
-                                     const char optShort,
-                                     int &target,
-                                     Validator<int> validatorFn)
+                                        const char optShort,
+                                        int &target,
+                                        Validator<int> *validatorFn)
 {
     std::cout << "Opt::addOptEntry4 <int> START" << std::endl;
 
-    OptEntryInt *opt = new OptEntryInt(optLong, optShort, target, validatorFn);
+    OptEntryBase *opt = new OptEntryInt(optLong, optShort, target, validatorFn);
     if (opt != nullptr)
     {
-        entries.push_back(dynamic_cast<OptEntry *>(opt));
+        entries.push_back(opt);
     }
     // else TODO: some error mechanism
 
@@ -121,7 +121,7 @@ template <> void Opt::addOptEntry<int> (const std::string  optLong,
 template void Opt::addOptEntry<int> (const std::string  optLong,
                                      const char optShort,
                                      int &target,
-                                     Validator<int> validatorFn);
+                                     Validator<int> *validatorFn);
 
 int Opt::parseOpt(int argc, const char* argv[])
 {
@@ -168,7 +168,7 @@ int Opt::parseOpt(int argc, const char* argv[])
             }
 
             //for (auto&& e : entries)
-            for (OptEntry *e : entries)
+            for (OptEntryBase *e : entries)
             {
                 std::cout << "optEntry START" << std::endl;
                 retVal = e->parseOpt(argStr, argChar, valStr); // TODO: is this ok?

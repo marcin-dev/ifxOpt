@@ -9,26 +9,20 @@
 #define INCLUDE_IFXOPT_ENTRY_INT_H
 
 #include "ifxOptEntry.h"
-#include "ifxValidator.h"
 
 namespace ifx
 {
 
-class OptEntryInt : public OptEntry
+class OptEntryInt : public OptEntry<int>
 {
-private:
-    int               &target;
-    Validator<int>    &validator;
-    static DefaultValidator<int>  defaultValidator;  // static, it may be shared between all objects
-
 public:
     OptEntryInt(const std::string  optLong,
                 const char optShort,
                 int &target,
-                Validator<int> &validator = defaultValidator);
+                Validator<int> *validator = nullptr);
     virtual ~OptEntryInt();
 
-    virtual int parseOpt(const std::string &valStr);
+    virtual int parseValue(const std::string &valStr, int &value);
 };
 
 } /* namespace ifx */

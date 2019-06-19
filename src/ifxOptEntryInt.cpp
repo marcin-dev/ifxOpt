@@ -14,18 +14,16 @@
 namespace ifx
 {
 
-DefaultValidator<int>  OptEntryInt::defaultValidator;
-
 OptEntryInt::OptEntryInt(const std::string  optLong,
                          const char optShort,
                          int &target,
-                         Validator<int> &validator) : OptEntry(optLong, optShort), target(target), validator(validator)
+                         Validator<int> *validator) : OptEntry<int>(optLong, optShort, target, validator)
 { }
 
 OptEntryInt::~OptEntryInt()
 { }
 
-int OptEntryInt::parseOpt(const std::string &valStr)
+int OptEntryInt::parseValue(const std::string &valStr, int &value)
 {
     // Using C-style procedure to avoid exceptions
     long int  val;
@@ -43,19 +41,7 @@ int OptEntryInt::parseOpt(const std::string &valStr)
         if (   val <= INT_MAX
             && val >= INT_MIN)
         {
-            int temp = static_cast<int>(val);
-            // Good range, run validation procedure
-            if (this->validator(temp) == true)
-            {
-                // Validation ok, store the value in target reference
-                this->target = temp;
-                std::cout << "OptEntryInt Successfully extracted value, target=" << this->target << std::endl;
-            }
-            else
-            {
-                retVal = -3; // validation error
-                std::cout << "OptEntryInt validation error for value" << std::endl;
-            }
+            value = static_cast<int>(val);
         }
         else
         {
