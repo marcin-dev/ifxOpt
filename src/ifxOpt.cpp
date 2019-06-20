@@ -1,21 +1,19 @@
 /**
  * ifxOpt.cpp
  *
- * @date   2019.04
+ * @date   2019.06
  * @author man
  */
 
-#include "ifxOpt.h"
-
-// Type specific option parsers:
-#include "ifxOptEntryInt.h"
-
 #include <iostream>
+
+#include "ifxOpt.h"
+#include "internal/ifxCustomValidator.h"
 
 namespace ifx
 {
 
-Opt::Opt() : entries() // we start from 10 options for now
+Opt::Opt() : entries()
 {
     // TODO Auto-generated constructor stub
 }
@@ -55,112 +53,8 @@ const char *Opt::getOption(const char* in, std::string &argStr, char &argChar)
 }
 
 // ****************************************************************************
-// Custom Validator Generic Template
+// Option type generic templates are defined in internal/internal_ifxOpt.h
 // ****************************************************************************
-
-template <typename T>
-class InternalCustomValidator : public Validator<T>
-{
-private:
-    std::function<bool(T)> func;
-public:
-    InternalCustomValidator(std::function<bool(T)> func) : func(func) {}
-    virtual ~InternalCustomValidator() {}
-    virtual bool operator() (T& argVal) { return func(argVal); }
-};
-
-template <typename T>
-Validator<T> *CustomValidator(std::function<bool(T)> func)
-{
-    return new InternalCustomValidator<T>(func);
-}
-
-// ****************************************************************************
-// Option type generic template
-// ****************************************************************************
-
-template <typename T> void Opt::addOptEntry(const std::string  optLong,
-                                       const char optShort,
-                                       T &target)
-{
-    // TODO different implementation for basic types
-    std::cout << "Opt::addOptEntry3 <>" << std::endl;
-}
-
-template <typename T> void Opt::addOptEntry(const std::string  optLong,
-                                       const char optShort,
-                                       T &target,
-                                       Validator<T> *validatorFn)
-{
-    // TODO different implementation for basic types
-    std::cout << "Opt::addOptEntry4 <>" << std::endl;
-}
-
-// ****************************************************************************
-// Option type: int
-// ****************************************************************************
-
-template <> void Opt::addOptEntry<int> (const std::string  optLong,
-                                        const char optShort,
-                                        int &target)
-{
-    std::cout << "Opt::addOptEntry3 <int> START" << std::endl;
-
-    OptEntryBase *opt = new OptEntryInt(optLong, optShort, target);
-    if (opt != nullptr)
-    {
-        entries.push_back(opt);
-    }
-    // else TODO: some error mechanism
-
-    std::cout << "Opt::addOptEntry3 <int> END" << std::endl;
-}
-
-template <> void Opt::addOptEntry<int> (const std::string  optLong,
-                                        const char optShort,
-                                        int &target,
-                                        Validator<int> *validatorFn)
-{
-    std::cout << "Opt::addOptEntry4 <int> START" << std::endl;
-
-    OptEntryBase *opt = new OptEntryInt(optLong, optShort, target, validatorFn);
-    if (opt != nullptr)
-    {
-        entries.push_back(opt);
-    }
-    // else TODO: some error mechanism
-
-    std::cout << "Opt::addOptEntry4 <int> END" << std::endl;
-}
-
-template <> void Opt::addOptEntry<int> (const std::string  optLong,
-                                        const char optShort,
-                                        int &target,
-                                        std::function<bool(int)> validatorFn)
-{
-    std::cout << "Opt::addOptEntryC4 <int> START" << std::endl;
-
-    this->addOptEntry<int>(optLong, optShort, target, CustomValidator<int>(validatorFn));
-
-    std::cout << "Opt::addOptEntryC4 <int> END" << std::endl;
-}
-
-// Add definition to avoid linker errors
-template void Opt::addOptEntry<int> (const std::string  optLong,
-                                     const char optShort,
-                                     int &target);
-
-// Add definition to avoid linker errors
-template void Opt::addOptEntry<int> (const std::string  optLong,
-                                     const char optShort,
-                                     int &target,
-                                     Validator<int> *validatorFn);
-
-// Add definition to avoid linker errors
-template void Opt::addOptEntry<int> (const std::string  optLong,
-                                     const char optShort,
-                                     int &target,
-                                     std::function<bool(int)> validatorFn);
 
 int Opt::parseOpt(int argc, const char* argv[])
 {

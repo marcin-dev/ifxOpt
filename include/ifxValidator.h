@@ -9,7 +9,6 @@
 #define INCLUDE_IFXVALIDATOR_H
 
 #include <string>
-#include <functional>
 
 namespace ifx
 {

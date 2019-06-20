@@ -1,7 +1,7 @@
 /**
  * ifxOpt.h
  *
- * @date   2019.04
+ * @date   2019.06
  * @author man
  */
 
@@ -28,19 +28,22 @@ public:
     Opt();
     virtual ~Opt();
 
-    template <typename T> void addOptEntry(const std::string  optLong,
-                                           const char optShort,
-                                           T &target);
+    template <typename T>
+    void addOptEntry(const std::string  optLong,
+                     const char optShort,
+                     T &target);
 
-    template <typename T> void addOptEntry(const std::string  optLong,
-                                           const char optShort,
-                                           T &target,
-                                           Validator<T> *validatorFn);
+    template <typename T>
+    void addOptEntry(const std::string  optLong,
+                     const char optShort,
+                     T &target,
+                     Validator<T> *validatorFn);
 
-    template <typename T> void addOptEntry(const std::string  optLong,
-                                           const char optShort,
-                                           T &target,
-                                           std::function<bool(T)> validatorFn);
+    template <typename T>
+    void addOptEntry(const std::string  optLong,
+                     const char optShort,
+                     T &target,
+                     std::function<bool(T)> validatorFn);
 
     int parseOpt(int argc, const char* argv[]);
 };

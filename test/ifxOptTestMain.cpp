@@ -21,20 +21,30 @@ bool validateNumber(int val)
     return false;
 }
 
+bool validateText(std::string val)
+{
+    std::cout << LOG_TAG "validateText" << std::endl;
+
+    return true;
+}
+
 int parseOpt(int argc, const char **argv)
 {
     ifx::Opt opt;
     int number;
     int retVal;
+    std::string text;
 
     opt.addOptEntry<int>("number", 'n', number, validateNumber);
-//    opt.addOptEntry<int>("number", 'n', number);
+    //opt.addOptEntry<int>("number", 'n', number);
+    opt.addOptEntry<std::string>("text", 't', text, validateText);
 
     retVal = opt.parseOpt(argc, argv);
 
     if (retVal == 0)
     {
         std::cout << LOG_TAG "parsed number: " << number << std::endl;
+        std::cout << LOG_TAG "parsed text  : " << text << std::endl;
     }
 
     return retVal;

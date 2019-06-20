@@ -3,9 +3,9 @@ set(target_name  ifxOpt)
 
 set(source_files
     ifxOpt.cpp
-    #ifxValidator.cpp
     ifxOptEntry.cpp
-    ifxOptEntryInt.cpp
+    internal/ifxOptEntry_int.cpp
+    internal/ifxOptEntry_string.cpp
     )
 
 add_library(${target_name} ${source_files})

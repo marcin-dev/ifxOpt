@@ -1,29 +1,37 @@
 /**
- * ifxOptEntryInt.cpp
+ * ifxOptEntry_Int.cpp
  *
  * @date   2019.05
  * @author man
  */
 
-#include "ifxOptEntryInt.h"
-
 #include <cstdlib>
 #include <climits>
 #include <iostream>
 
+#include "internal_ifxOpt.h"
+#include "internal_ifxOptEntry.h"
+
 namespace ifx
 {
 
-OptEntryInt::OptEntryInt(const std::string  optLong,
-                         const char optShort,
-                         int &target,
-                         Validator<int> *validator) : OptEntry<int>(optLong, optShort, target, validator)
-{ }
+// ****************************************************************************
+// Implementation for Option type: int
+// ****************************************************************************
 
-OptEntryInt::~OptEntryInt()
-{ }
+// ****************************************************************************
+// Instantiation of Opt class methods and OptEntry class
+// ****************************************************************************
 
-int OptEntryInt::parseValue(const std::string &valStr, int &value)
+IFX_OPT_ADD_INSTANTIATE_TYPE(int);
+IFX_OPT_ENTRY_INSTANTIATE_TYPE(int);
+
+// ****************************************************************************
+// Implementation of OptEntry::parseValue method
+// ****************************************************************************
+
+template <>
+int OptEntry<int>::parseValue(const std::string &valStr, int &value)
 {
     // Using C-style procedure to avoid exceptions
     long int  val;

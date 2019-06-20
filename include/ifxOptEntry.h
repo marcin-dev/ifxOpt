@@ -1,7 +1,7 @@
 /**
  * ifxOptEntry.h
  *
- * @date   2019.04
+ * @date   2019.06
  * @author man
  */
 
@@ -9,7 +9,6 @@
 #define INCLUDE_IFXOPT_ENTRY_H
 
 #include <string>
-#include <iostream>
 
 #include "ifxValidator.h"
 
@@ -37,52 +36,20 @@ class OptEntry : public OptEntryBase
 {
 protected:
     T                 &target;
-    Validator<int>    *validator;
+    Validator<T>      *validator;
 
 public:
     OptEntry(const std::string  optLong,
              const char optShort,
              T &target,
-             Validator<int> *validator = nullptr)
-             : OptEntryBase(optLong, optShort), target(target), validator(validator)
-    {}
+             Validator<T> *validator = nullptr);
 
-    virtual ~OptEntry()
-    {
-        if (validator != nullptr)
-        {
-            delete validator;
-        }
-    }
+    virtual ~OptEntry();
 
-    virtual int parseOpt(const std::string &valStr)
-    {
-        int retVal;
-        T   value;
+    virtual int parseOpt(const std::string &valStr);
 
-        retVal = this->parseValue(valStr, value);
-
-        if (retVal == 0)
-        {
-            // Good extraction, run validation procedure
-            if (   this->validator == nullptr
-                || (*this->validator)(value) == true)
-            {
-                // Validation ok, store the value in target reference
-                this->target = value;
-                std::cout << "OptEntryInt Successfully extracted value, target=" << this->target << std::endl;
-            }
-            else
-            {
-                retVal = -3; // validation error
-                std::cout << "OptEntryInt validation error for value" << std::endl;
-            }
-        }
-
-        return retVal;
-    }
-
-    virtual int parseValue(const std::string &valStr, T &value) = 0;
+    // The following function needs to be defined in each type-specific implementation
+    int parseValue(const std::string &valStr, T &value);
 };
 
 } /* namespace ifx */
