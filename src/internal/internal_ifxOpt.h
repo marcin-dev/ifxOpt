@@ -50,14 +50,8 @@ void Opt::addOptEntry(const std::string  optLong,
                       T &target,
                       std::function<bool(T)> validatorFn)
 {
-    std::cout << "Opt::addOptEntryC4 <T> START" << std::endl;
-
     this->addOptEntry<T>(optLong, optShort, target, CustomValidator<T>(validatorFn));
-
-    std::cout << "Opt::addOptEntryC4 <T> END" << std::endl;
 }
-
-    int parseOpt(int argc, const char* argv[]);
 
 
 #define IFX_OPT_ADD_INSTANTIATE_TYPE(type)                                      \

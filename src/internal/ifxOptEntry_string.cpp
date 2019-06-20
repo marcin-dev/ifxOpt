@@ -34,11 +34,11 @@ IFX_OPT_ENTRY_INSTANTIATE_TYPE(std::string);
 template <>
 int OptEntry<std::string>::parseValue(const std::string &valStr, std::string &value)
 {
-    int retVal = 0;
+    int retVal = IFX_OPT_RESULT_SUCCESS;
 
     std::cout << "OptEntry<std::string>::parseOpt, valStr: " << valStr << std::endl;
 
-    if (valStr.length() > 0)
+    if (valStr.empty() == false)
     {
         // Just copy the string to the target
         value = valStr;
@@ -46,7 +46,7 @@ int OptEntry<std::string>::parseValue(const std::string &valStr, std::string &va
     else
     {
         // Empty input string
-        retVal = -1;
+        retVal = IFX_OPT_ERROR_VALUE_CANNOT_EXTRACT;
         std::cout << "OptEntry<std::string> error: input string empty" << std::endl;
     }
 

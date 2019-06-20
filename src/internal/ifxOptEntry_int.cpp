@@ -36,7 +36,7 @@ int OptEntry<int>::parseValue(const std::string &valStr, int &value)
     // Using C-style procedure to avoid exceptions
     long int  val;
     char     *endptr;
-    int       retVal = 0;
+    int       retVal = IFX_OPT_RESULT_SUCCESS;
 
     std::cout << "OptEntryInt::parseOpt, valStr: " << valStr << std::endl;
 
@@ -53,13 +53,13 @@ int OptEntry<int>::parseValue(const std::string &valStr, int &value)
         }
         else
         {
-            retVal = -2; // out of range
+            retVal = IFX_OPT_ERROR_VALUE_OUT_OF_RANGE; // out of range
             std::cout << "OptEntryInt value out of range" << std::endl;
         }
     }
     else
     {
-        retVal = -1; // cannot convert
+        retVal = IFX_OPT_ERROR_VALUE_CANNOT_EXTRACT; // cannot convert
         std::cout << "OptEntryInt value conversion error" << std::endl;
     }
 

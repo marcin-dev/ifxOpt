@@ -11,6 +11,7 @@
 #include <vector>
 #include <functional>
 
+#include "ifxOptResultCodes.h"
 #include "ifxOptEntry.h"
 #include "ifxValidator.h"
 

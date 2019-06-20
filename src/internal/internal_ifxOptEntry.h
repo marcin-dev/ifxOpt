@@ -41,7 +41,7 @@ int OptEntry<T>::parseOpt(const std::string &valStr)
 
     retVal = this->parseValue(valStr, value);
 
-    if (retVal == 0)
+    if (retVal == IFX_OPT_RESULT_SUCCESS)
     {
         // Good extraction, run validation procedure
         if (   this->validator == nullptr
@@ -53,7 +53,7 @@ int OptEntry<T>::parseOpt(const std::string &valStr)
         }
         else
         {
-            retVal = -3; // validation error
+            retVal = IFX_OPT_ERROR_CUSTOM_VALIDATION_FAILED; // validation error
             std::cout << "OptEntryInt validation error for value" << std::endl;
         }
     }

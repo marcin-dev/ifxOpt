@@ -58,7 +58,7 @@ const char *Opt::getOption(const char* in, std::string &argStr, char &argChar)
 
 int Opt::parseOpt(int argc, const char* argv[])
 {
-    int retVal = 0;
+    int retVal = IFX_OPT_RESULT_SUCCESS;
     const char  *argvPtr;
     std::string  argStr;
     std::string  valStr;
@@ -107,7 +107,7 @@ int Opt::parseOpt(int argc, const char* argv[])
                 retVal = e->parseOpt(argStr, argChar, valStr); // TODO: is this ok?
                 std::cout << "optEntry END" << std::endl;
 
-                if (retVal > 0)
+                if (retVal == IFX_OPT_NOT_MACHING_OPTION)
                 {
                     // Not matching string, go to the next element
                     continue;
@@ -120,7 +120,7 @@ int Opt::parseOpt(int argc, const char* argv[])
                 }
             }
 
-            if (retVal < 0)
+            if (retVal < IFX_OPT_RESULT_SUCCESS) // TODO: != unknown option
             {
                 // Parsing error, need to exit
                 break;

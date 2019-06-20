@@ -5,6 +5,7 @@
  * @author man
  */
 
+#include <ifxOptResultCodes.h>
 #include "ifxOptEntry.h"
 
 #include <iostream>
@@ -24,7 +25,7 @@ int OptEntryBase::parseOpt(const std::string &argStr, const char argShort, const
 {
     std::cout << "parseOpt(argStr=" << argStr << ", argShort=" << argShort << ", valStr=" << valStr << ")" << std::endl;
 
-    int retVal = 1; // by default - not matching string
+    int retVal = IFX_OPT_NOT_MACHING_OPTION; // by default - not matching string
 
     std::cout << "optLong: " << this->optLong << ", optShort: " << this->optShort << std::endl;
 

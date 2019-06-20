@@ -37,11 +37,12 @@ int parseOpt(int argc, const char **argv)
 
     opt.addOptEntry<int>("number", 'n', number, validateNumber);
     //opt.addOptEntry<int>("number", 'n', number);
-    opt.addOptEntry<std::string>("text", 't', text, validateText);
+    //opt.addOptEntry<std::string>("text", 't', text, validateText);
+    opt.addOptEntry<std::string>("text", 't', text);
 
     retVal = opt.parseOpt(argc, argv);
 
-    if (retVal == 0)
+    if (retVal == IFX_OPT_RESULT_SUCCESS)
     {
         std::cout << LOG_TAG "parsed number: " << number << std::endl;
         std::cout << LOG_TAG "parsed text  : " << text << std::endl;
