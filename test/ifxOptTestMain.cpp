@@ -27,7 +27,7 @@ int parseOpt(int argc, const char **argv)
     int number;
     int retVal;
 
-    opt.addOptEntry<int>("number", 'n', number, ifx::CustomValidator<int>(validateNumber));
+    opt.addOptEntry<int>("number", 'n', number, validateNumber);
 //    opt.addOptEntry<int>("number", 'n', number);
 
     retVal = opt.parseOpt(argc, argv);

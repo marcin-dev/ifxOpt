@@ -55,6 +55,27 @@ const char *Opt::getOption(const char* in, std::string &argStr, char &argChar)
 }
 
 // ****************************************************************************
+// Custom Validator Generic Template
+// ****************************************************************************
+
+template <typename T>
+class InternalCustomValidator : public Validator<T>
+{
+private:
+    std::function<bool(T)> func;
+public:
+    InternalCustomValidator(std::function<bool(T)> func) : func(func) {}
+    virtual ~InternalCustomValidator() {}
+    virtual bool operator() (T& argVal) { return func(argVal); }
+};
+
+template <typename T>
+Validator<T> *CustomValidator(std::function<bool(T)> func)
+{
+    return new InternalCustomValidator<T>(func);
+}
+
+// ****************************************************************************
 // Option type generic template
 // ****************************************************************************
 
@@ -80,8 +101,8 @@ template <typename T> void Opt::addOptEntry(const std::string  optLong,
 // ****************************************************************************
 
 template <> void Opt::addOptEntry<int> (const std::string  optLong,
-                                     const char optShort,
-                                     int &target)
+                                        const char optShort,
+                                        int &target)
 {
     std::cout << "Opt::addOptEntry3 <int> START" << std::endl;
 
@@ -94,11 +115,6 @@ template <> void Opt::addOptEntry<int> (const std::string  optLong,
 
     std::cout << "Opt::addOptEntry3 <int> END" << std::endl;
 }
-
-// Add definition to avoid linker errors
-template void Opt::addOptEntry<int> (const std::string  optLong,
-                                     const char optShort,
-                                     int &target);
 
 template <> void Opt::addOptEntry<int> (const std::string  optLong,
                                         const char optShort,
@@ -117,11 +133,34 @@ template <> void Opt::addOptEntry<int> (const std::string  optLong,
     std::cout << "Opt::addOptEntry4 <int> END" << std::endl;
 }
 
+template <> void Opt::addOptEntry<int> (const std::string  optLong,
+                                        const char optShort,
+                                        int &target,
+                                        std::function<bool(int)> validatorFn)
+{
+    std::cout << "Opt::addOptEntryC4 <int> START" << std::endl;
+
+    this->addOptEntry<int>(optLong, optShort, target, CustomValidator<int>(validatorFn));
+
+    std::cout << "Opt::addOptEntryC4 <int> END" << std::endl;
+}
+
+// Add definition to avoid linker errors
+template void Opt::addOptEntry<int> (const std::string  optLong,
+                                     const char optShort,
+                                     int &target);
+
 // Add definition to avoid linker errors
 template void Opt::addOptEntry<int> (const std::string  optLong,
                                      const char optShort,
                                      int &target,
                                      Validator<int> *validatorFn);
+
+// Add definition to avoid linker errors
+template void Opt::addOptEntry<int> (const std::string  optLong,
+                                     const char optShort,
+                                     int &target,
+                                     std::function<bool(int)> validatorFn);
 
 int Opt::parseOpt(int argc, const char* argv[])
 {

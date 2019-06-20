@@ -9,6 +9,7 @@
 #define INCLUDE_IFXOPT_H
 
 #include <vector>
+#include <functional>
 
 #include "ifxOptEntry.h"
 #include "ifxValidator.h"
@@ -35,6 +36,11 @@ public:
                                            const char optShort,
                                            T &target,
                                            Validator<T> *validatorFn);
+
+    template <typename T> void addOptEntry(const std::string  optLong,
+                                           const char optShort,
+                                           T &target,
+                                           std::function<bool(T)> validatorFn);
 
     int parseOpt(int argc, const char* argv[]);
 };
