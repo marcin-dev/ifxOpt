@@ -20,7 +20,11 @@ Opt::Opt() : entries()
 
 Opt::~Opt()
 {
-    // TODO Auto-generated destructor stub
+    // Cleanup all allocated entries
+    for (OptEntryBase *e : entries)
+    {
+        delete e;
+    }
 }
 
 const char *Opt::getOption(const char* in, std::string &argStr, char &argChar)
