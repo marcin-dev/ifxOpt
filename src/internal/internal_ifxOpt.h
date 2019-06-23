@@ -27,12 +27,21 @@ void Opt::addOptEntry(const std::string  optLong,
                       bool               valMandatory,
                       Validator<T>      *validatorFn)
 {
-    OptEntryBase *opt = new OptEntry<T>(optLong, optShort, valName, helpString, target, mandatory, valMandatory, validatorFn);
-    if (opt != nullptr)
+    if (   optShort == '\0'
+        && optLong.empty() == true)
     {
-        this->entries.push_back(opt);
+        // TODO: cannot add empty option, some error mechanism
+        exit(IFX_OPT_ERROR_INVALID_ARGUMENTS);
     }
-    // else TODO: some error mechanism
+    else
+    {
+        OptEntryBase *opt = new OptEntry<T>(optLong, optShort, valName, helpString, target, mandatory, valMandatory, validatorFn);
+        if (opt != nullptr)
+        {
+            this->entries.push_back(opt);
+        }
+        // else TODO: some error mechanism
+    }
 }
 
 template <typename T>

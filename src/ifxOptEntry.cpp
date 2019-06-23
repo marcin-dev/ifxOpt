@@ -42,8 +42,8 @@ int OptEntryBase::parseOpt(const std::string &argStr, const char argShort, const
 
     std::cout << "optLong: " << this->optLong << ", optShort: " << this->optShort << std::endl;
 
-    if (   this->optLong.compare(argStr) == 0
-        || this->optShort == argShort )
+    if (   (this->optLong.empty() == false && this->optLong.compare(argStr) == 0)
+        || (this->optShort        != '\0'  && this->optShort == argShort) )
     {
         std::cout << "parseOpt MATCH" << std::endl;
         retVal = this->parseOpt(valStr); // run the second virtual method to parse value

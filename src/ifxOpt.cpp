@@ -70,13 +70,33 @@ void Opt::printHelpAndExit(const char *argv0, int exitStatus, std::string header
         std::cout << headerStr << "\n\n";
     }
 
-
     std::string usageString = std::string("Usage: ").append(argv0);
     std::string optionsHelp = "Options:\n";
 
     for (const OptEntryBase * const &e : entries)
     {
-        std::string optionUsageString = std::string("<-") + e->getOptShort() + "|--" + e->getOptLong();
+        bool addPipeChar = false;
+        std::string optionUsageString = "<";
+
+        // TODO: Move these constructions to some new OptEntryBase class method
+        if (e->getOptShort() != '\0')
+        {
+            optionUsageString += "-";
+            optionUsageString += e->getOptShort();
+            addPipeChar = true;
+        }
+
+        if (e->getOptLong().empty() == false)
+        {
+            if (addPipeChar == true)
+            {
+                optionUsageString += '|';
+            }
+            optionUsageString += "--";
+            optionUsageString += e->getOptLong();
+        }
+
+
         if (e->isValMandatory() == true)
         {
             optionUsageString.append(" <" + e->getValName() + ">");
@@ -141,6 +161,7 @@ int Opt::parseOpt(int argc, const char* argv[])
     const char  *argvPtr;
     std::string  argStr;
     std::string  valStr;
+    const char  *optArgv;
     char         argChar;
 
     // TODO:
@@ -158,6 +179,7 @@ int Opt::parseOpt(int argc, const char* argv[])
         if (argvPtr != argv[i])
         {
             // option found
+            optArgv = argv[i];
 
             // check if it is help
             if (   argStr.compare("help") == 0
@@ -212,7 +234,7 @@ int Opt::parseOpt(int argc, const char* argv[])
             if (retVal == IFX_OPT_NOT_MACHING_OPTION)
             {
                 // Option not found, display the error, print help and exit
-                this->printHelpAndExit(argv[0], IFX_OPT_NOT_MACHING_OPTION, std::string("Unrecognized option: ") + argv[i]);
+                this->printHelpAndExit(argv[0], IFX_OPT_NOT_MACHING_OPTION, std::string("Unrecognized option: ") + optArgv);
             }
             else if (retVal < IFX_OPT_RESULT_SUCCESS) // TODO: != unknown option
             {
