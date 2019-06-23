@@ -27,7 +27,12 @@ private:
 
 public:
     OptEntryBase(const std::string  optLong,
-                 const char optShort);
+                 const char         optShort,
+                 const std::string  valName,
+                 std::string        helpString,
+                 bool               mandatory = false,
+                 bool               valMandatory = false);
+
     virtual ~OptEntryBase();
 
     const std::string &getHelpString()  const;
@@ -51,9 +56,13 @@ protected:
 
 public:
     OptEntry(const std::string  optLong,
-             const char optShort,
-             T &target,
-             Validator<T> *validator = nullptr);
+             const char         optShort,
+             const std::string  valName,
+             std::string        helpString,
+             T                 &target,
+             bool               mandatory = false,
+             bool               valMandatory = false,
+             Validator<T>      *validator = nullptr);
 
     virtual ~OptEntry();
 

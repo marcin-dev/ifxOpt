@@ -14,9 +14,13 @@ namespace ifx
 {
 
 OptEntryBase::OptEntryBase(const std::string  optLong,
-                           const char optShort)
-                           : helpString("Option help"), valName("value"), optLong(optLong),
-                             optShort(optShort), mandatory(false), valMandatory(true)
+                           const char         optShort,
+                           const std::string  valName,
+                           std::string        helpString,
+                           bool               mandatory,
+                           bool               valMandatory)
+                           : helpString(helpString), valName(valName), optLong(optLong),
+                             optShort(optShort), mandatory(mandatory), valMandatory(valMandatory)
 { }
 
 OptEntryBase::~OptEntryBase()

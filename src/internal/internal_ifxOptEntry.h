@@ -18,10 +18,14 @@ namespace ifx
 
 template <typename T>
 OptEntry<T>::OptEntry(const std::string  optLong,
-                      const char optShort,
-                      T &target,
-                      Validator<T> *validator)
-                      : OptEntryBase(optLong, optShort), target(target), validator(validator)
+                      const char         optShort,
+                      const std::string  valName,
+                      std::string        helpString,
+                      T                 &target,
+                      bool               mandatory,
+                      bool               valMandatory,
+                      Validator<T>      *validator)
+                      : OptEntryBase(optLong, optShort, valName, helpString, mandatory, valMandatory), target(target), validator(validator)
 {}
 
 template <typename T>
@@ -62,12 +66,16 @@ int OptEntry<T>::parseOpt(const std::string &valStr)
 }
 
 
-#define IFX_OPT_ENTRY_INSTANTIATE_TYPE(type)                                \
-    template int OptEntry<type>::parseOpt(const std::string &valStr);       \
-    template OptEntry<type>::OptEntry(const std::string  optLong,           \
-                                      const char optShort,                  \
-                                      type &target,                         \
-                                      Validator<type> *validator = nullptr);\
+#define IFX_OPT_ENTRY_INSTANTIATE_TYPE(type)                                    \
+    template int OptEntry<type>::parseOpt(const std::string &valStr);           \
+    template OptEntry<type>::OptEntry(const std::string  optLong,               \
+                                      const char         optShort,              \
+                                      const std::string  valName,               \
+                                      std::string        helpString,            \
+                                      type              &target,                \
+                                      bool               mandatory = false,     \
+                                      bool               valMandatory = false,  \
+                                      Validator<type>   *validator = nullptr);  \
     template OptEntry<type>::~OptEntry()
 
 

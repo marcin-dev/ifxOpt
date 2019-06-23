@@ -38,19 +38,22 @@ public:
 
     template <typename T>
     void addOptEntry(const std::string  optLong,
-                     const char optShort,
-                     T &target);
+                     const char         optShort,
+                     const std::string  valName,
+                     std::string        helpString,
+                     T                 &target,
+                     bool               mandatory = false,
+                     bool               valMandatory = false,
+                     Validator<T>      *validatorFn = nullptr);
 
     template <typename T>
     void addOptEntry(const std::string  optLong,
-                     const char optShort,
-                     T &target,
-                     Validator<T> *validatorFn);
-
-    template <typename T>
-    void addOptEntry(const std::string  optLong,
-                     const char optShort,
-                     T &target,
+                     const char         optShort,
+                     const std::string  valName,
+                     std::string        helpString,
+                     T                 &target,
+                     bool               mandatory,
+                     bool               valMandatory,
                      std::function<bool(T)> validatorFn);
 
     int parseOpt(int argc, const char* argv[]);

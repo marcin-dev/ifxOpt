@@ -35,10 +35,14 @@ int parseOpt(int argc, const char **argv)
     int retVal;
     std::string text;
 
-    opt.addOptEntry<int>("number", 'n', number, validateNumber);
+    opt.addOptEntry<int>("number", 'n', "value",
+                         "Any integer number between -10 and 10",
+                         number, false, true, validateNumber);
     //opt.addOptEntry<int>("number", 'n', number);
     //opt.addOptEntry<std::string>("text", 't', text, validateText);
-    opt.addOptEntry<std::string>("text", 't', text);
+    opt.addOptEntry<std::string>("text", 't', "anything",
+                                 "Any text is accepted",
+                                 text, false, true);
 
     retVal = opt.parseOpt(argc, argv);
 
