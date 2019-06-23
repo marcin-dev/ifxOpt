@@ -19,6 +19,8 @@ namespace ifx
 
 #define  IFX_OPT_RESULT_SUCCESS                 (0)
 #define  IFX_OPT_NOT_MACHING_OPTION             (1)
+#define  IFX_OPT_NOT_FOUND                      (2)
+#define  IFX_OPT_VALUE_NOT_FOUND                (3)
 
 #define  IFX_OPT_ERROR_VALUE_CANNOT_EXTRACT     (-1)
 #define  IFX_OPT_ERROR_VALUE_OUT_OF_RANGE       (-2)

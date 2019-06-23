@@ -22,11 +22,18 @@ class Opt
 {
 private:
     std::vector<OptEntryBase *> entries;
+    std::string helpHeader;
 
     const char *getOption(const char* in, std::string &argStr, char &argChar);
 
+    void printHelpAndExit(const char *argv0, int exitStatus) const;
+    void printHelpAndExit(const char *argv0, int exitStatus, std::string headerStr) const;
+
+    // Non-copyable
+    Opt(const Opt &);
+
 public:
-    Opt();
+    Opt(const std::string helpHeader = "");
     virtual ~Opt();
 
     template <typename T>

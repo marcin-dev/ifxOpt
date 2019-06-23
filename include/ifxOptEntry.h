@@ -18,13 +18,24 @@ namespace ifx
 class OptEntryBase
 {
 private:
+    const std::string  helpString;
+    const std::string  valName;
     const std::string  optLong;
     const char         optShort;
+    bool               mandatory;
+    bool               valMandatory;
 
 public:
     OptEntryBase(const std::string  optLong,
                  const char optShort);
     virtual ~OptEntryBase();
+
+    const std::string &getHelpString()  const;
+    const std::string &getValName()     const;
+    const std::string &getOptLong()     const;
+    const char        &getOptShort()    const;
+    const bool        &isMandatory()    const;
+    const bool        &isValMandatory() const;
 
     int parseOpt(const std::string &argStr, const char argShort, const std::string &valStr);
 

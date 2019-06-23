@@ -30,7 +30,7 @@ bool validateText(std::string val)
 
 int parseOpt(int argc, const char **argv)
 {
-    ifx::Opt opt;
+    ifx::Opt opt("Option Parser ifx::Opt test program");
     int number;
     int retVal;
     std::string text;
