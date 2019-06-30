@@ -15,7 +15,10 @@ namespace ifx
 #define OPTIONS_HELP_LEN_INDENT_START   ((size_t)2)
 #define OPTIONS_HELP_LEN_INDENT_END     ((size_t)26)
 
-Opt::Opt(const std::string helpHeader) : entries(), helpHeader(helpHeader)
+Opt::Opt(OptionSet options, const std::string helpHeader)
+: entries(),
+  helpHeader(helpHeader),
+  assginCharAllowed(IFX_OPTION_CHECK(options, IFX_OPT_ALLOW_ARG_ASSIGN_CHAR))
 {
     // TODO Auto-generated constructor stub
 }

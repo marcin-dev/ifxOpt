@@ -12,6 +12,7 @@
 #include <functional>
 
 #include "ifxOptResultCodes.h"
+#include "ifxOptOptionCodes.h"
 #include "ifxOptEntry.h"
 #include "ifxValidator.h"
 
@@ -23,6 +24,7 @@ class Opt
 private:
     std::vector<OptEntryBase *> entries;
     std::string helpHeader;
+    const bool  assginCharAllowed;
 
     const char *getOption(const char* in, std::string &argStr, char &argChar);
 
@@ -33,7 +35,7 @@ private:
     Opt(const Opt &);
 
 public:
-    Opt(const std::string helpHeader = "");
+    Opt(OptionSet options, const std::string helpHeader = "");
     virtual ~Opt();
 
     template <typename T>
@@ -42,8 +44,7 @@ public:
                      const std::string  valName,
                      std::string        helpString,
                      T                 &target,
-                     bool               mandatory = false,
-                     bool               valMandatory = false,
+                     OptionSet          options,
                      Validator<T>      *validatorFn = nullptr);
 
     template <typename T>
@@ -52,8 +53,7 @@ public:
                      const std::string  valName,
                      std::string        helpString,
                      T                 &target,
-                     bool               mandatory,
-                     bool               valMandatory,
+                     OptionSet          options,
                      std::function<bool(T)> validatorFn);
 
     int parseOpt(int argc, const char* argv[]);

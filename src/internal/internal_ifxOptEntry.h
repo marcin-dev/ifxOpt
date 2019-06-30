@@ -22,18 +22,17 @@ OptEntry<T>::OptEntry(const std::string  optLong,
                       const std::string  valName,
                       std::string        helpString,
                       T                 &target,
-                      bool               mandatory,
-                      bool               valMandatory,
+                      OptionSet          options,
                       Validator<T>      *validator)
-                      : OptEntryBase(optLong, optShort, valName, helpString, mandatory, valMandatory), target(target), validator(validator)
+                      : OptEntryBase(optLong, optShort, valName, helpString, options), mTarget(target), mValidator(validator)
 {}
 
 template <typename T>
 OptEntry<T>::~OptEntry()
 {
-    if (validator != nullptr)
+    if (mValidator != nullptr)
     {
-        delete validator;
+        delete mValidator;
     }
 }
 
@@ -48,12 +47,12 @@ int OptEntry<T>::parseOpt(const std::string &valStr)
     if (retVal == IFX_OPT_RESULT_SUCCESS)
     {
         // Good extraction, run validation procedure
-        if (   this->validator == nullptr
-            || (*this->validator)(value) == true)
+        if (   this->mValidator == nullptr
+            || (*this->mValidator)(value) == true)
         {
             // Validation ok, store the value in target reference
-            this->target = value;
-            std::cout << "OptEntryInt Successfully extracted value, target=" << this->target << std::endl;
+            this->mTarget = value;
+            std::cout << "OptEntryInt Successfully extracted value, target=" << this->mTarget << std::endl;
         }
         else
         {
@@ -73,8 +72,7 @@ int OptEntry<T>::parseOpt(const std::string &valStr)
                                       const std::string  valName,               \
                                       std::string        helpString,            \
                                       type              &target,                \
-                                      bool               mandatory = false,     \
-                                      bool               valMandatory = false,  \
+                                      OptionSet          options   = IFX_OPTION_SET_CLEAR, \
                                       Validator<type>   *validator = nullptr);  \
     template OptEntry<type>::~OptEntry()
 

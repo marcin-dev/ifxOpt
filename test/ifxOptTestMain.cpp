@@ -30,19 +30,19 @@ bool validateText(std::string val)
 
 int parseOpt(int argc, const char **argv)
 {
-    ifx::Opt opt("Option Parser ifx::Opt test program");
+    ifx::Opt opt(IFX_OPT_ALLOW_ARG_ASSIGN_CHAR, "Option Parser ifx::Opt test program");
     int number;
     int retVal;
     std::string text;
 
     opt.addOptEntry<int>("number", 'n', "value",
                          "Any integer number between -10 and 10",
-                         number, false, true, validateNumber);
+                         number, IFX_OPT_ENTRY_VAL_ARG_MANDATORY, validateNumber);
     //opt.addOptEntry<int>("number", 'n', number);
     //opt.addOptEntry<std::string>("text", 't', text, validateText);
     opt.addOptEntry<std::string>("text", 't', "anything",
                                  "Any text is accepted",
-                                 text, false, true);
+                                 text, IFX_OPT_ENTRY_VAL_ARG_MANDATORY);
 
     retVal = opt.parseOpt(argc, argv);
 

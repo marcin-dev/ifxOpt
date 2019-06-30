@@ -17,22 +17,27 @@ OptEntryBase::OptEntryBase(const std::string  optLong,
                            const char         optShort,
                            const std::string  valName,
                            std::string        helpString,
-                           bool               mandatory,
-                           bool               valMandatory)
-                           : helpString(helpString), valName(valName), optLong(optLong),
-                             optShort(optShort), mandatory(mandatory), valMandatory(valMandatory)
+                           OptionSet          options)
+                           : mHelpString(helpString),
+                             mValName(valName),
+                             mOptLong(optLong),
+                             mOptShort(optShort),
+                             mMandatory(IFX_OPTION_CHECK(options, IFX_OPT_ENTRY_MANDATORY)),
+                             mHasValArg(IFX_OPTION_CHECK(options, IFX_OPT_ENTRY_HAS_VAL_ARG)),
+                             mValMandatory(IFX_OPTION_CHECK(options, IFX_OPT_ENTRY_VAL_ARG_MANDATORY))
 { }
 
 OptEntryBase::~OptEntryBase()
 { }
 
 
-const std::string &OptEntryBase::getHelpString()  const { return this->helpString;  }
-const std::string &OptEntryBase::getValName()     const { return this->valName;     }
-const std::string &OptEntryBase::getOptLong()     const { return this->optLong;     }
-const char        &OptEntryBase::getOptShort()    const { return this->optShort;    }
-const bool        &OptEntryBase::isMandatory()    const { return this->mandatory;   }
-const bool        &OptEntryBase::isValMandatory() const { return this->valMandatory;}
+const std::string &OptEntryBase::getHelpString()  const { return this->mHelpString;  }
+const std::string &OptEntryBase::getValName()     const { return this->mValName;     }
+const std::string &OptEntryBase::getOptLong()     const { return this->mOptLong;     }
+const char        &OptEntryBase::getOptShort()    const { return this->mOptShort;    }
+const bool        &OptEntryBase::isMandatory()    const { return this->mMandatory;   }
+const bool        &OptEntryBase::hasValArg()      const { return this->mHasValArg;   }
+const bool        &OptEntryBase::isValMandatory() const { return this->mValMandatory;}
 
 int OptEntryBase::parseOpt(const std::string &argStr, const char argShort, const std::string &valStr)
 {
@@ -40,10 +45,10 @@ int OptEntryBase::parseOpt(const std::string &argStr, const char argShort, const
 
     int retVal = IFX_OPT_NOT_MACHING_OPTION; // by default - not matching string
 
-    std::cout << "optLong: " << this->optLong << ", optShort: " << this->optShort << std::endl;
+    std::cout << "optLong: " << this->mOptLong << ", optShort: " << this->mOptShort << std::endl;
 
-    if (   (this->optLong.empty() == false && this->optLong.compare(argStr) == 0)
-        || (this->optShort        != '\0'  && this->optShort == argShort) )
+    if (   (this->mOptLong.empty() == false && this->mOptLong.compare(argStr) == 0)
+        || (this->mOptShort        != '\0'  && this->mOptShort == argShort) )
     {
         std::cout << "parseOpt MATCH" << std::endl;
         retVal = this->parseOpt(valStr); // run the second virtual method to parse value

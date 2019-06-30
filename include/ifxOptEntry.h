@@ -11,6 +11,7 @@
 #include <string>
 
 #include "ifxValidator.h"
+#include "ifxOptOptionCodes.h"
 
 namespace ifx
 {
@@ -18,20 +19,20 @@ namespace ifx
 class OptEntryBase
 {
 private:
-    const std::string  helpString;
-    const std::string  valName;
-    const std::string  optLong;
-    const char         optShort;
-    bool               mandatory;
-    bool               valMandatory;
+    const std::string  mHelpString;
+    const std::string  mValName;
+    const std::string  mOptLong;
+    const char         mOptShort;
+    bool               mMandatory;
+    bool               mHasValArg;
+    bool               mValMandatory;
 
 public:
     OptEntryBase(const std::string  optLong,
                  const char         optShort,
                  const std::string  valName,
                  std::string        helpString,
-                 bool               mandatory = false,
-                 bool               valMandatory = false);
+                 OptionSet          options);
 
     virtual ~OptEntryBase();
 
@@ -40,6 +41,7 @@ public:
     const std::string &getOptLong()     const;
     const char        &getOptShort()    const;
     const bool        &isMandatory()    const;
+    const bool        &hasValArg()      const;
     const bool        &isValMandatory() const;
 
     int parseOpt(const std::string &argStr, const char argShort, const std::string &valStr);
@@ -51,8 +53,8 @@ template <typename T>
 class OptEntry : public OptEntryBase
 {
 protected:
-    T                 &target;
-    Validator<T>      *validator;
+    T                 &mTarget;
+    Validator<T>      *mValidator;
 
 public:
     OptEntry(const std::string  optLong,
@@ -60,8 +62,7 @@ public:
              const std::string  valName,
              std::string        helpString,
              T                 &target,
-             bool               mandatory = false,
-             bool               valMandatory = false,
+             OptionSet          options,
              Validator<T>      *validator = nullptr);
 
     virtual ~OptEntry();

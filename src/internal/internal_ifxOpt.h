@@ -23,8 +23,7 @@ void Opt::addOptEntry(const std::string  optLong,
                       const std::string  valName,
                       std::string        helpString,
                       T                 &target,
-                      bool               mandatory,
-                      bool               valMandatory,
+                      OptionSet          options,
                       Validator<T>      *validatorFn)
 {
     if (   optShort == '\0'
@@ -35,7 +34,7 @@ void Opt::addOptEntry(const std::string  optLong,
     }
     else
     {
-        OptEntryBase *opt = new OptEntry<T>(optLong, optShort, valName, helpString, target, mandatory, valMandatory, validatorFn);
+        OptEntryBase *opt = new OptEntry<T>(optLong, optShort, valName, helpString, target, options, validatorFn);
         if (opt != nullptr)
         {
             this->entries.push_back(opt);
@@ -50,11 +49,10 @@ void Opt::addOptEntry(const std::string  optLong,
                       const std::string  valName,
                       std::string        helpString,
                       T                 &target,
-                      bool               mandatory,
-                      bool               valMandatory,
+                      OptionSet          options,
                       std::function<bool(T)> validatorFn)
 {
-    this->addOptEntry<T>(optLong, optShort, valName, helpString, target, mandatory, valMandatory, CustomValidator<T>(validatorFn));
+    this->addOptEntry<T>(optLong, optShort, valName, helpString, target, options, CustomValidator<T>(validatorFn));
 }
 
 
@@ -64,16 +62,14 @@ void Opt::addOptEntry(const std::string  optLong,
                                          const std::string  valName,                \
                                          std::string        helpString,             \
                                          type              &target,                 \
-                                         bool               mandatory = false,      \
-                                         bool               valMandatory = false,   \
+                                         OptionSet          options     = IFX_OPTION_SET_CLEAR, \
                                          Validator<type>   *validatorFn = nullptr); \
     template void Opt::addOptEntry<type>(const std::string  optLong,                \
                                          const char         optShort,               \
                                          const std::string  valName,                \
                                          std::string        helpString,             \
                                          type              &target,                 \
-                                         bool               mandatory,              \
-                                         bool               valMandatory,           \
+                                         OptionSet          options,                \
                                          std::function<bool(type)> validatorFn)
 
 } /* namespace ifx */
