@@ -24,13 +24,9 @@ typedef uint32_t OptionSet;
 #define  IFX_OPT_ALLOW_ARG_ASSIGN_CHAR          IFX_OPTION_VAL(0u)
 
 #define  IFX_OPT_ENTRY_MANDATORY                IFX_OPTION_VAL(0u)
-#define  IFX_OPT_ENTRY_HAS_VAL_ARG              IFX_OPTION_VAL(1u)
-#define  IFX_OPT_ENTRY_VAL_ARG_MANDATORY        IFX_OPTION_VAL(2u)
-#define  IFX_OPT_ENTRY_ONE_FROM_GROUP_1         IFX_OPTION_VAL(3u)
-#define  IFX_OPT_ENTRY_ONE_FROM_GROUP_2         IFX_OPTION_VAL(4u)
-#define  IFX_OPT_ENTRY_ONE_FROM_GROUP_3         IFX_OPTION_VAL(5u)
-#define  IFX_OPT_ENTRY_ONE_FROM_GROUP_4         IFX_OPTION_VAL(6u)
-#define  IFX_OPT_ENTRY_ONE_FROM_GROUP_5         IFX_OPTION_VAL(7u)
+#define  IFX_OPT_ENTRY_MANDATORY_EX_GROUP       IFX_OPTION_VAL(1u) // TODO: implement
+#define  IFX_OPT_ENTRY_OPTIONAL_EX_GROUP        IFX_OPTION_VAL(2u) // TODO: implement
+#define  IFX_OPT_ENTRY_MANDATORY_AT_LEAST_ONE   IFX_OPTION_VAL(3u) // TODO: implement
 
 } /* namespace ifx */
 

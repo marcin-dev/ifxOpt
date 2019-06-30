@@ -17,8 +17,9 @@ namespace ifx
 
 Opt::Opt(OptionSet options, const std::string helpHeader)
 : entries(),
+  usedEntries(),
   helpHeader(helpHeader),
-  assginCharAllowed(IFX_OPTION_CHECK(options, IFX_OPT_ALLOW_ARG_ASSIGN_CHAR))
+  mAssignCharAllowed(IFX_OPTION_CHECK(options, IFX_OPT_ALLOW_ARG_ASSIGN_CHAR))
 {
     // TODO Auto-generated constructor stub
 }
@@ -27,6 +28,10 @@ Opt::~Opt()
 {
     // Cleanup all allocated entries
     for (OptEntryBase *e : entries)
+    {
+        delete e;
+    }
+    for (OptEntryBase *e : usedEntries)
     {
         delete e;
     }
@@ -46,6 +51,18 @@ const char *Opt::getOption(const char* in, std::string &argStr, char &argChar)
             in++;
             // Long opt
             argStr = std::string(in);
+
+            // If '=' is allowed, need to search for it and clear remaining characters
+            if (this->mAssignCharAllowed == true)
+            {
+                size_t pos = argStr.find_first_of('=');
+                if (pos != std::string::npos)
+                {
+                    argStr.erase(pos);
+                }
+            }
+
+            in += argStr.length();
         }
         else
         {
@@ -100,8 +117,14 @@ void Opt::printHelpAndExit(const char *argv0, int exitStatus, std::string header
         }
 
 
-        if (e->isValMandatory() == true)
+        if (e->isFlag() == true)
         {
+            // Value argument is optional only for FLAG entries (boolean)
+            optionUsageString.append(" [" + e->getValName() + "]");
+        }
+        else
+        {
+            // Value is mandatory for all entries by default
             optionUsageString.append(" <" + e->getValName() + ">");
         }
 
@@ -117,8 +140,10 @@ void Opt::printHelpAndExit(const char *argv0, int exitStatus, std::string header
             optionUsageString.append("]");
         }
 
-        usageString.append(1, ' ');
-        usageString.append(optionUsageString);
+        //usageString.append(1, ' ');
+        //usageString.append(optionUsageString);
+        usageString += " " + optionUsageString;
+
         if (optionUsageString.length() < (OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START))
         {
             // Fill with spaces up to (OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START)
@@ -169,8 +194,6 @@ int Opt::parseOpt(int argc, const char* argv[])
 
     // TODO:
     // trim each argv
-    // add some bool or whatever to state whether option value is mandatory (is this needed?)
-    // default value for each option?
 
     std::cout << "Opt::parseOpt START, argc = " << argc << std::endl;
 
@@ -192,45 +215,75 @@ int Opt::parseOpt(int argc, const char* argv[])
                 this->printHelpAndExit(argv[0], IFX_OPT_RESULT_SUCCESS);
             }
 
-            //get value
             std::cout << "Opt::parseOpt option found, long: " << argStr << ", short: " << argChar << std::endl;
-
-            // TODO: value optional or mandatory?
-
-            if (argc > i+1)
-            {
-                // Some string present, maybe value, get it for parsing
-                // Move iterator
-                i++;
-                std::cout << "Opt::parseOpt potential value string found: " << argv[i] << std::endl;
-                valStr = std::string(argv[i]);
-            }
-            else
-            {
-                // No value string, need to trigger error if value is mandatory
-                std::cout << "Opt::parseOpt no value found" << std::endl;
-                valStr = std::string("");
-
-                // TODO: trigger error if the value is mandatory
-            }
 
             //for (auto&& e : entries)
             for (OptEntryBase *&e : entries)
             {
                 std::cout << "optEntry START" << std::endl;
-                retVal = e->parseOpt(argStr, argChar, valStr); // TODO: is this ok?
+                retVal = e->parseOpt(argStr, argChar);
                 std::cout << "optEntry END" << std::endl;
 
-                if (retVal == IFX_OPT_NOT_MACHING_OPTION)
+                if (retVal != IFX_OPT_RESULT_SUCCESS)
                 {
-                    // Not matching string, go to the next element
                     continue;
                 }
+
+                // Additional checks for '=' character and no space before value for short options
+                if (this->mAssignCharAllowed == true && *argvPtr == '=')    // condition for both short and long options
+                {
+                    argvPtr++;
+                    valStr = std::string(argvPtr);
+                }
+                else if (argChar != 0 && *argvPtr != '\0')                  // condition for short option only
+
+                {
+                    valStr = std::string(argvPtr);
+                }
                 else
+                {
+                    if (argc > i+1)
+                    {
+                        // Some string present, maybe value, get it for parsing
+                        i++;
+                        valStr = std::string(argv[i]);
+                    }
+                    else
+                    {
+                        // No value string, need to trigger error if value is mandatory
+                        std::cout << "Opt::parseOpt no value found" << std::endl;
+
+                        // Special case for flag entries
+                        if (e->isFlag() == true)
+                        {
+                            std::cout << "Opt::parseOpt flag entry, setting value to true" << std::endl;
+
+                            valStr = std::string("true"); // set true for all flags that are present
+                        }
+                        else
+                        {
+                            std::cout << "Opt::parseOpt no flag entry, raising error" << std::endl;
+
+                            // Value argument not found, display the error, print help and exit
+                            this->printHelpAndExit(argv[0], IFX_OPT_VALUE_NOT_FOUND, std::string("No value found for option: ") + optArgv);
+                        }
+
+                        // TODO: trigger error if the value is mandatory
+                    }
+                }
+
+                std::cout << "Opt::parseOpt potential value string found: " << valStr << std::endl;
+
+                retVal = e->parseValue(valStr); // run the virtual method to parse value
+                if (retVal == IFX_OPT_RESULT_SUCCESS)
                 {
                     // Found match and extracted the value successfully
                     // Or parsing error
                     break;
+                }
+                else
+                {
+                    this->printHelpAndExit(argv[0], retVal, std::string("Parsing value error, option: ") + optArgv + ", incorrect value string: " + valStr);
                 }
             }
 
@@ -238,11 +291,6 @@ int Opt::parseOpt(int argc, const char* argv[])
             {
                 // Option not found, display the error, print help and exit
                 this->printHelpAndExit(argv[0], IFX_OPT_NOT_MACHING_OPTION, std::string("Unrecognized option: ") + optArgv);
-            }
-            else if (retVal < IFX_OPT_RESULT_SUCCESS) // TODO: != unknown option
-            {
-                // Parsing error, need to exit
-                break;
             }
         }
         else

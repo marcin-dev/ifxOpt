@@ -37,12 +37,12 @@ OptEntry<T>::~OptEntry()
 }
 
 template <typename T>
-int OptEntry<T>::parseOpt(const std::string &valStr)
+int OptEntry<T>::parseValue(const std::string &valStr)
 {
-    int retVal;
+    int retVal = IFX_OPT_RESULT_SUCCESS;
     T   value;
 
-    retVal = this->parseValue(valStr, value);
+    retVal = this->parseValueTypeImpl(valStr, value);
 
     if (retVal == IFX_OPT_RESULT_SUCCESS)
     {
@@ -66,7 +66,7 @@ int OptEntry<T>::parseOpt(const std::string &valStr)
 
 
 #define IFX_OPT_ENTRY_INSTANTIATE_TYPE(type)                                    \
-    template int OptEntry<type>::parseOpt(const std::string &valStr);           \
+    template int OptEntry<type>::parseValue(const std::string &valStr);         \
     template OptEntry<type>::OptEntry(const std::string  optLong,               \
                                       const char         optShort,              \
                                       const std::string  valName,               \

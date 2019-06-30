@@ -23,8 +23,9 @@ class Opt
 {
 private:
     std::vector<OptEntryBase *> entries;
+    std::vector<OptEntryBase *> usedEntries;
     std::string helpHeader;
-    const bool  assginCharAllowed;
+    const bool  mAssignCharAllowed;             // tells if there can be a '=' character before option and value arguments
 
     const char *getOption(const char* in, std::string &argStr, char &argChar);
 

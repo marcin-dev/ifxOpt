@@ -24,8 +24,6 @@ private:
     const std::string  mOptLong;
     const char         mOptShort;
     bool               mMandatory;
-    bool               mHasValArg;
-    bool               mValMandatory;
 
 public:
     OptEntryBase(const std::string  optLong,
@@ -41,12 +39,13 @@ public:
     const std::string &getOptLong()     const;
     const char        &getOptShort()    const;
     const bool        &isMandatory()    const;
-    const bool        &hasValArg()      const;
-    const bool        &isValMandatory() const;
 
-    int parseOpt(const std::string &argStr, const char argShort, const std::string &valStr);
+    int parseOpt(const std::string &argStr, const char argShort);
 
-    virtual int parseOpt(const std::string &valStr) = 0;
+    virtual int parseValue(const std::string &valStr) = 0;
+
+    // The following function may be defined in each type-specific implementation
+    bool isFlag() const;
 };
 
 template <typename T>
@@ -67,10 +66,10 @@ public:
 
     virtual ~OptEntry();
 
-    virtual int parseOpt(const std::string &valStr);
+    virtual int parseValue(const std::string &valStr);
 
     // The following function needs to be defined in each type-specific implementation
-    int parseValue(const std::string &valStr, T &value);
+    int parseValueTypeImpl(const std::string &valStr, T &value);
 };
 
 } /* namespace ifx */
