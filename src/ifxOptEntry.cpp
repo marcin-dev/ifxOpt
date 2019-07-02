@@ -29,6 +29,54 @@ OptEntryBase::~OptEntryBase()
 { }
 
 
+void OptEntryBase::getUsageString(std::string &optionUsageString) const
+{
+    bool addPipeChar = false;
+    optionUsageString = "<";
+
+    // TODO: Move these constructions to some new OptEntryBase class method
+    if (mOptShort != '\0')
+    {
+        optionUsageString += "-";
+        optionUsageString += mOptShort;
+        addPipeChar = true;
+    }
+
+    if (mOptLong.empty() == false)
+    {
+        if (addPipeChar == true)
+        {
+            optionUsageString += '|';
+        }
+        optionUsageString += "--";
+        optionUsageString += mOptLong;
+    }
+
+
+    if (this->isFlag() == true)
+    {
+        // Value argument is optional only for FLAG entries (boolean)
+        optionUsageString.append(" [" + mValName + "]");
+    }
+    else
+    {
+        // Value is mandatory for all entries by default
+        optionUsageString.append(" <" + mValName + ">");
+    }
+
+    if (mMandatory == true)
+    {
+        // Brackets for mandatory entries: < >
+        optionUsageString.append(">");
+    }
+    else
+    {
+        // Brackets for optional entries: [ ]
+        optionUsageString.at(0) = '[';
+        optionUsageString.append("]");
+    }
+}
+
 const std::string &OptEntryBase::getHelpString()  const { return this->mHelpString;  }
 const std::string &OptEntryBase::getValName()     const { return this->mValName;     }
 const std::string &OptEntryBase::getOptLong()     const { return this->mOptLong;     }

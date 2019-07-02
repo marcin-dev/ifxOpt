@@ -16,3 +16,5 @@ Ideas:
 - add unique switch, so that among few only one must be used
 - add unique switch, so that among few at least one must be used
 - add checks for emty long and short options
+
+- add option value as enum?!

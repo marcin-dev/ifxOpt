@@ -37,7 +37,7 @@ int parseOpt(int argc, const char **argv)
 
     opt.addOptEntry<int>("number", 'n', "value",
                          "Any integer number between -10 and 10",
-                         number, IFX_OPTION_SET_CLEAR, validateNumber);
+                         number, IFX_OPT_ENTRY_MANDATORY, validateNumber);
     //opt.addOptEntry<int>("number", 'n', number);
     //opt.addOptEntry<std::string>("text", 't', text, validateText);
     opt.addOptEntry<std::string>("text", 't', "anything",
