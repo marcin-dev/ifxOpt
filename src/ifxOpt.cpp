@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include <algorithm>
 
 #include "ifxOpt.h"
 
@@ -28,10 +29,6 @@ Opt::~Opt()
 {
     // Cleanup all allocated entries
     for (OptEntryBase *e : entries)
-    {
-        delete e;
-    }
-    for (OptEntryBase *e : usedEntries)
     {
         delete e;
     }
@@ -85,11 +82,15 @@ void Opt::verifyAfterParsing(const char *argv0) const
     {
         if (e->isMandatory() == true)
         {
-            std::string optionUsageString;
-            e->getUsageString(optionUsageString);
+            auto it = std::find(this->usedEntries.begin(), this->usedEntries.end(), e);
+            if (it == this->usedEntries.end())
+            {
+                std::string optionUsageString;
+                e->getUsageString(optionUsageString);
 
-            this->printHelpAndExit(argv0, IFX_OPT_NOT_FOUND,
-                    std::string("Error: The following option is mandatory: ") + optionUsageString);
+                this->printHelpAndExit(argv0, IFX_OPT_NOT_FOUND,
+                        std::string("Error: The following option is mandatory: ") + optionUsageString);
+            }
         }
     }
 }
@@ -188,11 +189,10 @@ int Opt::parseOpt(int argc, const char* argv[])
             std::cout << "Opt::parseOpt option found, long: " << argStr << ", short: " << argChar << std::endl;
 
             //for (auto&& e : entries)
-            //for (OptEntryBase *&e : entries)
-            for (auto it = this->entries.begin(); it != this->entries.end(); it++)
+            for (OptEntryBase *&e : entries)
             {
                 std::cout << "optEntry START" << std::endl;
-                retVal = (*it)->parseOpt(argStr, argChar);
+                retVal = e->parseOpt(argStr, argChar);
                 std::cout << "optEntry END" << std::endl;
 
                 if (retVal != IFX_OPT_RESULT_SUCCESS)
@@ -225,7 +225,7 @@ int Opt::parseOpt(int argc, const char* argv[])
                         std::cout << "Opt::parseOpt no value found" << std::endl;
 
                         // Special case for flag entries
-                        if ((*it)->isFlag() == true)
+                        if (e->isFlag() == true)
                         {
                             std::cout << "Opt::parseOpt flag entry, setting value to true" << std::endl;
 
@@ -245,13 +245,13 @@ int Opt::parseOpt(int argc, const char* argv[])
 
                 std::cout << "Opt::parseOpt potential value string found: " << valStr << std::endl;
 
-                retVal = (*it)->parseValue(valStr); // run the virtual method to parse value
+                retVal = e->parseValue(valStr); // run the virtual method to parse value
                 if (retVal == IFX_OPT_RESULT_SUCCESS)
                 {
                     // Found match and extracted the value successfully
 
-                    // Move the entry to consumed list
-                    this->usedEntries.splice(this->usedEntries.end(), this->entries, it);
+                    // Copy the entry pointer to consumed list
+                    this->usedEntries.push_back(e);
 
                     break;
                 }

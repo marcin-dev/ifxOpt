@@ -57,7 +57,7 @@ int OptEntry<T>::parseValue(const std::string &valStr)
         else
         {
             retVal = IFX_OPT_ERROR_CUSTOM_VALIDATION_FAILED; // validation error
-            std::cout << "OptEntryInt validation error for value" << std::endl;
+            std::cout << "OptEntryInt validation error for value: " << valStr << std::endl;
         }
     }
 
