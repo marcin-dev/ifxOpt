@@ -8,11 +8,9 @@
 #ifndef INTERNAL_IFXOPT_H
 #define INTERNAL_IFXOPT_H
 
-#include <vector>
-#include <functional>
-
 #include <ifxOpt.h>
 #include "ifxCustomValidator.h"
+#include "ifxDbg.h"
 
 namespace ifx
 {

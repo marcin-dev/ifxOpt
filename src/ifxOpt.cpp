@@ -5,10 +5,11 @@
  * @author man
  */
 
-#include <iostream>
 #include <algorithm>
 
-#include "ifxOpt.h"
+#include <ifxOpt.h>
+
+#include "internal/ifxDbg.h"
 
 namespace ifx
 {
@@ -95,11 +96,6 @@ void Opt::verifyAfterParsing(const char *argv0) const
     }
 }
 
-void Opt::printHelpAndExit(const char *argv0, int exitStatus) const
-{
-    this->printHelpAndExit(argv0, exitStatus, this->helpHeader);
-}
-
 void Opt::printHelpAndExit(const char *argv0, int exitStatus, std::string headerStr) const
 {
     if (headerStr.empty() == false)
@@ -113,9 +109,17 @@ void Opt::printHelpAndExit(const char *argv0, int exitStatus, std::string header
     for (const OptEntryBase * const &e : entries)
     {
         std::string optionUsageString;
+
         e->getUsageString(optionUsageString);
 
-        usageString += " " + optionUsageString;
+        if (e->isMandatory() == true)
+        {
+            usageString += " <" + optionUsageString + ">";
+        }
+        else
+        {
+            usageString += " [" + optionUsageString + "]";
+        }
 
         if (optionUsageString.length() < (OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START))
         {
@@ -166,7 +170,7 @@ int Opt::parseOpt(int argc, const char* argv[])
     // TODO:
     // trim each argv
 
-    std::cout << "Opt::parseOpt START, argc = " << argc << std::endl;
+    IFX_LOG_DBG("Opt::parseOpt START, argc = " << argc);
 
     for (int i = 1; i < argc; i++)
     {
@@ -183,17 +187,17 @@ int Opt::parseOpt(int argc, const char* argv[])
                 || argChar == 'h')
             {
                 // display help and exit program
-                this->printHelpAndExit(argv[0], IFX_OPT_RESULT_SUCCESS);
+                this->printHelpAndExit(argv[0], IFX_OPT_RESULT_SUCCESS, this->helpHeader);
             }
 
-            std::cout << "Opt::parseOpt option found, long: " << argStr << ", short: " << argChar << std::endl;
+            IFX_LOG_DBG("Opt::parseOpt option found, long: " << argStr << ", short: " << argChar);
 
             //for (auto&& e : entries)
             for (OptEntryBase *&e : entries)
             {
-                std::cout << "optEntry START" << std::endl;
+                IFX_LOG_DBG("optEntry START");
                 retVal = e->parseOpt(argStr, argChar);
-                std::cout << "optEntry END" << std::endl;
+                IFX_LOG_DBG("optEntry END");
 
                 if (retVal != IFX_OPT_RESULT_SUCCESS)
                 {
@@ -222,18 +226,18 @@ int Opt::parseOpt(int argc, const char* argv[])
                     else
                     {
                         // No value string, need to trigger error if opt is not a string
-                        std::cout << "Opt::parseOpt no value found" << std::endl;
+                        IFX_LOG_DBG("Opt::parseOpt no value found");
 
                         // Special case for flag entries
                         if (e->isFlag() == true)
                         {
-                            std::cout << "Opt::parseOpt flag entry, setting value to true" << std::endl;
+                            IFX_LOG_DBG("Opt::parseOpt flag entry, setting value to true");
 
                             valStr = std::string("true"); // set true for all flags that are present
                         }
                         else
                         {
-                            std::cout << "Opt::parseOpt no flag entry, raising error" << std::endl;
+                            IFX_LOG_DBG("Opt::parseOpt no flag entry, raising error");
 
                             // Value argument not found, display the error, print help and exit
                             this->printHelpAndExit(argv[0], IFX_OPT_VALUE_NOT_FOUND, std::string("Error: No value found for option: ") + optArgv);
@@ -243,7 +247,7 @@ int Opt::parseOpt(int argc, const char* argv[])
                     }
                 }
 
-                std::cout << "Opt::parseOpt potential value string found: " << valStr << std::endl;
+                IFX_LOG_DBG("Opt::parseOpt potential value string found: " << valStr);
 
                 //
                 // Parsing the Value
@@ -279,7 +283,7 @@ int Opt::parseOpt(int argc, const char* argv[])
         else
         {
             // Option not found, we have got string to store
-            std::cout << "Opt::parseOpt option not found, argv: " << argStr << ", short: " << argChar << std::endl;
+            IFX_LOG_DBG("Opt::parseOpt option not found, argv: " << argStr << ", short: " << argChar);
         }
     }
 
@@ -287,7 +291,7 @@ int Opt::parseOpt(int argc, const char* argv[])
     this->verifyAfterParsing(argv[0]);
 
 
-    std::cout << "Opt::parseOpt END, return code = " << retVal << std::endl;
+    IFX_LOG_DBG("Opt::parseOpt END, return code = " << retVal);
 
     return retVal;
 }

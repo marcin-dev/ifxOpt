@@ -6,9 +6,9 @@
  */
 
 #include <ifxOptResultCodes.h>
-#include "ifxOptEntry.h"
+#include <ifxOptEntry.h>
 
-#include <iostream>
+#include "internal/ifxDbg.h"
 
 namespace ifx
 {
@@ -32,7 +32,7 @@ OptEntryBase::~OptEntryBase()
 void OptEntryBase::getUsageString(std::string &optionUsageString) const
 {
     bool addPipeChar = false;
-    optionUsageString = "<";
+    optionUsageString.clear();
 
     // TODO: Move these constructions to some new OptEntryBase class method
     if (mOptShort != '\0')
@@ -63,18 +63,6 @@ void OptEntryBase::getUsageString(std::string &optionUsageString) const
         // Value is mandatory for all entries by default
         optionUsageString.append(" <" + mValName + ">");
     }
-
-    if (mMandatory == true)
-    {
-        // Brackets for mandatory entries: < >
-        optionUsageString.append(">");
-    }
-    else
-    {
-        // Brackets for optional entries: [ ]
-        optionUsageString.at(0) = '[';
-        optionUsageString.append("]");
-    }
 }
 
 const std::string &OptEntryBase::getHelpString()  const { return this->mHelpString;  }
@@ -85,22 +73,21 @@ const bool        &OptEntryBase::isMandatory()    const { return this->mMandator
 
 int OptEntryBase::parseOpt(const std::string &argStr, const char argShort)
 {
-    std::cout << "parseOpt(argStr=" << argStr << ", argShort=" << argShort << ")" << std::endl;
-
     int retVal;
 
-    std::cout << "optLong: " << this->mOptLong << ", optShort: " << this->mOptShort << std::endl;
+    IFX_LOG_DBG("parseOpt(argStr=" << argStr << ", argShort=" << argShort << ")");
+    IFX_LOG_DBG("optLong: " << this->mOptLong << ", optShort: " << this->mOptShort);
 
     if (   (this->mOptLong.empty() == false && this->mOptLong.compare(argStr) == 0)
         || (this->mOptShort        != '\0'  && this->mOptShort == argShort) )
     {
         retVal = IFX_OPT_RESULT_SUCCESS;
-        std::cout << "parseOpt MATCH" << std::endl;
+        IFX_LOG_DBG("parseOpt MATCH");
     }
     else
     {
         retVal = IFX_OPT_NOT_MACHING_OPTION;
-        std::cout << "parseOpt NOT MATCH" << std::endl;
+        IFX_LOG_DBG("parseOpt NOT MATCH");
     }
 
     return retVal;

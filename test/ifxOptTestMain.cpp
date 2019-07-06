@@ -9,7 +9,7 @@
 
 #include <ifxOpt.h>
 
-#define LOG_TAG     " >>> [IFX TEST] "
+#define LOG_TAG     " >>> [IFX_TEST] "
 
 bool validateNumber(int val)
 {

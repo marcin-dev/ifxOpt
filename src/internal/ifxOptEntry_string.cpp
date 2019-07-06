@@ -8,10 +8,10 @@
 #include <cstdlib>
 #include <climits>
 #include <string>
-#include <iostream>
 
 #include "internal_ifxOpt.h"
 #include "internal_ifxOptEntry.h"
+#include "ifxDbg.h"
 
 namespace ifx
 {
@@ -36,7 +36,7 @@ int OptEntry<std::string>::parseValueTypeImpl(const std::string &valStr, std::st
 {
     int retVal = IFX_OPT_RESULT_SUCCESS;
 
-    std::cout << "OptEntry<std::string>::parseOpt, valStr: " << valStr << std::endl;
+    IFX_LOG_DBG("OptEntry<std::string>::parseOpt, valStr: " << valStr);
 
     if (valStr.empty() == false)
     {
@@ -47,7 +47,7 @@ int OptEntry<std::string>::parseValueTypeImpl(const std::string &valStr, std::st
     {
         // Empty input string
         retVal = IFX_OPT_ERROR_VALUE_CANNOT_EXTRACT;
-        std::cout << "OptEntry<std::string> error: input string empty" << std::endl;
+        IFX_LOG_ERR("OptEntry<std::string> error: input string empty");
     }
 
     return retVal;

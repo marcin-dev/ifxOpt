@@ -9,9 +9,9 @@
 #define INTERNAL_IFXOPT_ENTRY_H
 
 #include <string>
-#include <iostream>
 
 #include <ifxOptEntry.h>
+#include "ifxDbg.h"
 
 namespace ifx
 {
@@ -52,12 +52,12 @@ int OptEntry<T>::parseValue(const std::string &valStr)
         {
             // Validation ok, store the value in target reference
             this->mTarget = value;
-            std::cout << "OptEntryInt Successfully extracted value, target=" << this->mTarget << std::endl;
+            IFX_LOG_DBG("OptEntryInt Successfully extracted value, target=" << this->mTarget);
         }
         else
         {
             retVal = IFX_OPT_ERROR_CUSTOM_VALIDATION_FAILED; // validation error
-            std::cout << "OptEntryInt validation error for value: " << valStr << std::endl;
+            IFX_LOG_ERR("OptEntryInt validation error for value: " << valStr);
         }
     }
 
