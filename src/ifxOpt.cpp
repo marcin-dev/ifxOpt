@@ -203,11 +203,10 @@ int Opt::parseOpt(int argc, const char* argv[])
                 // Additional checks for '=' character and no space before value for short options
                 if (this->mAssignCharAllowed == true && *argvPtr == '=')    // condition for both short and long options
                 {
-                    argvPtr++;
+                    argvPtr++;  // +1 to skip '=' character
                     valStr = std::string(argvPtr);
                 }
                 else if (argChar != 0 && *argvPtr != '\0')                  // condition for short option only
-
                 {
                     valStr = std::string(argvPtr);
                 }
@@ -215,13 +214,14 @@ int Opt::parseOpt(int argc, const char* argv[])
                 {
                     if (argc > i+1)
                     {
-                        // Some string present, maybe value, get it for parsing
+                        // Some string present, potential value, get it for parsing
                         i++;
-                        valStr = std::string(argv[i]);
+                        argvPtr = argv[i];  // this assignment is done for Parsing the Value check
+                        valStr = std::string(argvPtr);
                     }
                     else
                     {
-                        // No value string, need to trigger error if value is mandatory
+                        // No value string, need to trigger error if opt is not a string
                         std::cout << "Opt::parseOpt no value found" << std::endl;
 
                         // Special case for flag entries
@@ -245,8 +245,17 @@ int Opt::parseOpt(int argc, const char* argv[])
 
                 std::cout << "Opt::parseOpt potential value string found: " << valStr << std::endl;
 
+                //
+                // Parsing the Value
+                //
                 retVal = e->parseValue(valStr); // run the virtual method to parse value
-                if (retVal == IFX_OPT_RESULT_SUCCESS)
+                if (   (retVal == IFX_OPT_RESULT_SUCCESS)                   // success is always god :)
+                    || (   e->isFlag() == true                              // OR:  we may check special case for flag option type:
+                        && retVal      == IFX_OPT_ERROR_VALUE_CANNOT_EXTRACT//    -> it is ok if the value cannot be extracted,
+                        && argv[i]     == argvPtr)                          //    -> and value str is potentially next option argument
+                   )                                                        //      EXAMPLE1: --<FLAG>=<WRONG_VALUE> or -F<WRONG_VALUE> will fail this check, but
+                                                                            //      EXAMPLE2: --<FLAG> <SOMETHING> will pass and <FLAG> will be set to true;
+                                                                            //                (in this case <SOMETHING> is considered as next option)
                 {
                     // Found match and extracted the value successfully
 

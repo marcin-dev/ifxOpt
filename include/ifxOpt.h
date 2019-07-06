@@ -38,7 +38,7 @@ private:
     Opt(const Opt &);
 
 public:
-    Opt(OptionSet options, const std::string helpHeader = "");
+    Opt(OptionSet options = IFX_OPTION_SET_CLEAR, const std::string helpHeader = "");
     virtual ~Opt();
 
     template <typename T>
