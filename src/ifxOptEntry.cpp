@@ -34,7 +34,6 @@ void OptEntryBase::getUsageString(std::string &optionUsageString) const
     bool addPipeChar = false;
     optionUsageString.clear();
 
-    // TODO: Move these constructions to some new OptEntryBase class method
     if (mOptShort != '\0')
     {
         optionUsageString += "-";

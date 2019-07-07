@@ -4,17 +4,9 @@ Ideas:
 - few default validation methods + possibility for user to pass functor to validate value
 
 
-- option to set whether to use (allow) '=' or not
-  AND whether to accept space between arg and value
-- option to set if optEntry is mandatory or optional
-- add some bool or whatever to state whether option value is mandatory or optional
-- default value for each option?
 - add map that will remember argv index and matching optEntry (whether and when it was found)
-
-- add consumed optEntries
 - add non-option argument class
 - add unique switch, so that among few only one must be used
 - add unique switch, so that among few at least one must be used
-- add checks for emty long and short options
 
 - add option value as enum?!

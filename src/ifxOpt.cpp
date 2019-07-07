@@ -25,9 +25,7 @@ Opt::Opt(OptionSet options, const std::string helpHeader, std::string helpEndnot
   helpEndnote(helpEndnote),
   mAssignCharAllowed(IFX_OPTION_CHECK(options, IFX_OPT_ALLOW_ARG_ASSIGN_CHAR)),
   mNoExitOnError    (IFX_OPTION_CHECK(options, IFX_OPT_NO_EXIT_ON_ERROR))
-{
-    // TODO Auto-generated constructor stub
-}
+{ }
 
 Opt::~Opt()
 {
