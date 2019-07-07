@@ -22,23 +22,25 @@ namespace ifx
 class Opt
 {
 private:
-    std::list<OptEntryBase *> entries;
+    std::list<OptEntryBase *> entries;      // TODO: make this as vector of shared pointers?
     std::list<OptEntryBase *> usedEntries;
     const std::string helpHeader;
     const std::string helpEndnote;          // TODO: implement
-    const bool  mAssignCharAllowed;         // tells if there can be a '=' character before option and value arguments
+    const bool  mAssignCharAllowed;         // can be configured, tells if there can be a '=' character before option and value arguments
+    const bool  mNoExitOnError;             // can be configured, tells if the program should exit on parsing error
 
     const char *getOption(const char* in, std::string &argStr, char &argChar);
 
-    void verifyAfterParsing(const char *argv0) const;
+    int verifyAfterParsing(const char *argv0) const;
 
-    void printHelpAndExit(const char *argv0, int exitStatus, std::string headerStr) const;
+    std::string *generateHelp(const char *argv0, std::string headerStr = std::string(), std::string footerStr = std::string()) const;
+    void printHelpAndExitConditionally(const char *argv0, int exitStatus) const;
 
     // Non-copyable
     Opt(const Opt &);
 
 public:
-    Opt(OptionSet options = IFX_OPTION_SET_CLEAR, const std::string helpHeader = "");
+    Opt(OptionSet options = IFX_OPTION_SET_CLEAR, const std::string helpHeader = std::string(), std::string helpEndnote = std::string());
     virtual ~Opt();
 
     template <typename T>
@@ -60,6 +62,8 @@ public:
                      std::function<bool(T)> validatorFn);
 
     int parseOpt(int argc, const char* argv[]);
+
+    void printHelpAndExit(const char *argv0, int exitStatus) const;
 };
 
 } /* namespace ifx */

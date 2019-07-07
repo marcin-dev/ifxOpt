@@ -13,3 +13,5 @@ add_library(${target_name} ${source_files})
 target_include_directories(${target_name} PUBLIC
                            ../include
                            )
+
+#target_compile_definitions(${target_name} PRIVATE "-DDEBUG_LOG_ENABLED")

@@ -6,6 +6,7 @@
  */
 
 #include <algorithm>
+#include <memory>
 
 #include <ifxOpt.h>
 
@@ -17,11 +18,13 @@ namespace ifx
 #define OPTIONS_HELP_LEN_INDENT_START   ((size_t)2)
 #define OPTIONS_HELP_LEN_INDENT_END     ((size_t)26)
 
-Opt::Opt(OptionSet options, const std::string helpHeader)
+Opt::Opt(OptionSet options, const std::string helpHeader, std::string helpEndnote)
 : entries(),
   usedEntries(),
-  helpHeader(helpHeader),
-  mAssignCharAllowed(IFX_OPTION_CHECK(options, IFX_OPT_ALLOW_ARG_ASSIGN_CHAR))
+  helpHeader (helpHeader),
+  helpEndnote(helpEndnote),
+  mAssignCharAllowed(IFX_OPTION_CHECK(options, IFX_OPT_ALLOW_ARG_ASSIGN_CHAR)),
+  mNoExitOnError    (IFX_OPTION_CHECK(options, IFX_OPT_NO_EXIT_ON_ERROR))
 {
     // TODO Auto-generated constructor stub
 }
@@ -76,82 +79,122 @@ const char *Opt::getOption(const char* in, std::string &argStr, char &argChar)
     return in;
 }
 
-void Opt::verifyAfterParsing(const char *argv0) const
+int Opt::verifyAfterParsing(const char *argv0) const
 {
+    int ret = IFX_OPT_RESULT_SUCCESS;
+
     // Check for missed mandatory entries
-    for (const OptEntryBase * const &e : this->entries)
+    for (const OptEntryBase * const &e : this->entries) // could wrote auto e, but wanted to learn the explicit type
     {
         if (e->isMandatory() == true)
         {
+            // Check if the mandatory option argument is consumed
             auto it = std::find(this->usedEntries.begin(), this->usedEntries.end(), e);
             if (it == this->usedEntries.end())
             {
+                // Not fund on the consumed list, error
                 std::string optionUsageString;
                 e->getUsageString(optionUsageString);
 
-                this->printHelpAndExit(argv0, IFX_OPT_NOT_FOUND,
-                        std::string("Error: The following option is mandatory: ") + optionUsageString);
+                IFX_LOG_ERR(std::string("The following mandatory option is missing: ") + optionUsageString);
+
+                ret = IFX_OPT_NOT_FOUND;
             }
         }
     }
+
+    return ret;
 }
 
-void Opt::printHelpAndExit(const char *argv0, int exitStatus, std::string headerStr) const
+std::string *Opt::generateHelp(const char *argv0, std::string headerStr, std::string footerStr) const
 {
-    if (headerStr.empty() == false)
+    std::string *help = new std::string();
+
+    if (help != nullptr)
     {
-        std::cout << headerStr << "\n\n";
-    }
-
-    std::string usageString = std::string("Usage: ").append(argv0);
-    std::string optionsHelp = "Options:\n";
-
-    for (const OptEntryBase * const &e : entries)
-    {
-        std::string optionUsageString;
-
-        e->getUsageString(optionUsageString);
-
-        if (e->isMandatory() == true)
+        if (headerStr.empty() == false)
         {
-            usageString += " <" + optionUsageString + ">";
-        }
-        else
-        {
-            usageString += " [" + optionUsageString + "]";
+            help->append(headerStr + "\n\n");
         }
 
-        if (optionUsageString.length() < (OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START))
-        {
-            // Fill with spaces up to (OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START)
-            optionUsageString.append(OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START - optionUsageString.length(), ' ');
-        }
-        else
-        {
-            optionUsageString.push_back('\n');
-            optionUsageString.append(OPTIONS_HELP_LEN_INDENT_END, ' ');
-        }
+        help->append("Usage: ").append(argv0);
 
-        optionsHelp.append(OPTIONS_HELP_LEN_INDENT_START, ' ');
-        optionsHelp += optionUsageString;
+        std::string optionsHelp = "Options:";
 
-        // Need to shift each newline to the OPTIONS_HELP_LEN_INDENT_END
-        // to keep nice alignment
-        for (auto it = e->getHelpString().cbegin() ; it != e->getHelpString().cend() ; it++ )
+        for (const OptEntryBase * const &e : entries)
         {
-            optionsHelp.append(1, *it);
-            if (*it == '\n')
+            std::string optionUsageString;
+
+            e->getUsageString(optionUsageString);
+
+            if (e->isMandatory() == true)
             {
-                optionsHelp.append(OPTIONS_HELP_LEN_INDENT_END, ' ');
+                *help += " <" + optionUsageString + ">";
+            }
+            else
+            {
+                *help += " [" + optionUsageString + "]";
+            }
+
+            if (optionUsageString.length() < (OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START))
+            {
+                // Fill with spaces up to (OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START)
+                optionUsageString.append(OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START - optionUsageString.length(), ' ');
+            }
+            else
+            {
+                optionUsageString.push_back('\n');
+                optionUsageString.append(OPTIONS_HELP_LEN_INDENT_END, ' ');
+            }
+
+            optionsHelp.append(1, '\n');
+            optionsHelp.append(OPTIONS_HELP_LEN_INDENT_START, ' ');
+            optionsHelp += optionUsageString;
+
+            // Need to shift each newline to the OPTIONS_HELP_LEN_INDENT_END
+            // to keep nice alignment
+            for (auto it = e->getHelpString().cbegin() ; it != e->getHelpString().cend() ; it++ )
+            {
+                optionsHelp.append(1, *it);
+                if (*it == '\n')
+                {
+                    optionsHelp.append(OPTIONS_HELP_LEN_INDENT_END, ' ');
+                }
             }
         }
 
-        optionsHelp.append(1, '\n');
+        *help += "\n\n" + optionsHelp;
+
+        if (footerStr.empty() == false)
+        {
+            *help += "\n\n" + footerStr;
+        }
     }
 
-    std::cout << usageString << "\n" << optionsHelp << "\n" << std::endl;
+    return help;
+}
 
+void Opt::printHelpAndExit(const char *argv0, int exitStatus) const
+{
+    std::unique_ptr<std::string> helpUPtr(this->generateHelp(argv0, this->helpHeader, this->helpEndnote));
+
+    std::cout << *helpUPtr << std::endl;
+
+    IFX_LOG_DBG("Exiting with code: " << exitStatus);
     exit(exitStatus);
+}
+
+void Opt::printHelpAndExitConditionally(const char *argv0, int exitStatus) const
+{
+    std::unique_ptr<std::string> helpUPtr(this->generateHelp(argv0));
+
+    std::cout << *helpUPtr << std::endl;
+
+    if (mNoExitOnError == false)
+    {
+        IFX_LOG_DBG("Exiting with code: " << exitStatus);
+        exit(exitStatus);
+    }
 }
 
 // ****************************************************************************
@@ -161,6 +204,7 @@ void Opt::printHelpAndExit(const char *argv0, int exitStatus, std::string header
 int Opt::parseOpt(int argc, const char* argv[])
 {
     int retVal = IFX_OPT_RESULT_SUCCESS;
+    int result;
     const char  *argvPtr;
     std::string  argStr;
     std::string  valStr;
@@ -187,7 +231,7 @@ int Opt::parseOpt(int argc, const char* argv[])
                 || argChar == 'h')
             {
                 // display help and exit program
-                this->printHelpAndExit(argv[0], IFX_OPT_RESULT_SUCCESS, this->helpHeader);
+                this->printHelpAndExit(argv[0], IFX_OPT_RESULT_SUCCESS);
             }
 
             IFX_LOG_DBG("Opt::parseOpt option found, long: " << argStr << ", short: " << argChar);
@@ -196,10 +240,10 @@ int Opt::parseOpt(int argc, const char* argv[])
             for (OptEntryBase *&e : entries)
             {
                 IFX_LOG_DBG("optEntry START");
-                retVal = e->parseOpt(argStr, argChar);
+                result = e->parseOpt(argStr, argChar);
                 IFX_LOG_DBG("optEntry END");
 
-                if (retVal != IFX_OPT_RESULT_SUCCESS)
+                if (result != IFX_OPT_RESULT_SUCCESS)
                 {
                     continue;
                 }
@@ -240,7 +284,18 @@ int Opt::parseOpt(int argc, const char* argv[])
                             IFX_LOG_DBG("Opt::parseOpt no flag entry, raising error");
 
                             // Value argument not found, display the error, print help and exit
-                            this->printHelpAndExit(argv[0], IFX_OPT_VALUE_NOT_FOUND, std::string("Error: No value found for option: ") + optArgv);
+                            IFX_LOG_ERR(std::string("No value found for option: ") + optArgv);
+
+                            if (retVal == IFX_OPT_RESULT_SUCCESS)
+                            {
+                                retVal = IFX_OPT_VALUE_NOT_FOUND;
+                            }
+
+                            // Need to exit the loop if there is error+exit condition
+                            if (mNoExitOnError == false)
+                            {
+                                break;
+                            }
                         }
 
                         // TODO: trigger error if the value is mandatory
@@ -252,14 +307,21 @@ int Opt::parseOpt(int argc, const char* argv[])
                 //
                 // Parsing the Value
                 //
-                retVal = e->parseValue(valStr); // run the virtual method to parse value
-                if (   (retVal == IFX_OPT_RESULT_SUCCESS)                   // success is always god :)
-                    || (   e->isFlag() == true                              // OR:  we may check special case for flag option type:
-                        && retVal      == IFX_OPT_ERROR_VALUE_CANNOT_EXTRACT//    -> it is ok if the value cannot be extracted,
-                        && argv[i]     == argvPtr)                          //    -> and value str is potentially next option argument
-                   )                                                        //      EXAMPLE1: --<FLAG>=<WRONG_VALUE> or -F<WRONG_VALUE> will fail this check, but
-                                                                            //      EXAMPLE2: --<FLAG> <SOMETHING> will pass and <FLAG> will be set to true;
-                                                                            //                (in this case <SOMETHING> is considered as next option)
+                result = e->parseValue(valStr); // run the virtual method to parse value
+
+                // Special case for flag option type:
+                if (   e->isFlag() == true
+                    && result      == IFX_OPT_ERROR_VALUE_CANNOT_EXTRACT    // -> it is ok if the value cannot be extracted and value str is potentially
+                    && argv[i]     == argvPtr)                              // -> next option argument (flags may not have value string argument at all)
+                                                                            //   EXAMPLE1: --<FLAG>=<WRONG_VALUE> or -F<WRONG_VALUE> will fail this check, but
+                                                                            //   EXAMPLE2: --<FLAG> <SOMETHING> will pass and <FLAG> will be set to true;
+                                                                            //             (in this case <SOMETHING> is considered as next option)
+                {
+                    result = IFX_OPT_RESULT_SUCCESS;
+                }
+
+
+                if (result == IFX_OPT_RESULT_SUCCESS)
                 {
                     // Found match and extracted the value successfully
 
@@ -270,14 +332,43 @@ int Opt::parseOpt(int argc, const char* argv[])
                 }
                 else
                 {
-                    this->printHelpAndExit(argv[0], retVal, std::string("Error: Parsing value error, option: ") + optArgv + ", incorrect value string: " + valStr);
+                    IFX_LOG_ERR(std::string("Parsing value error, option: ") + optArgv + ", incorrect value string: " + valStr);
+                    if (retVal == IFX_OPT_RESULT_SUCCESS)
+                    {
+                        retVal = result;
+                    }
+
+                    // Need to exit the loop if there is error+exit condition
+                    if (mNoExitOnError == false)
+                    {
+                        break;
+                    }
                 }
             }
 
-            if (retVal == IFX_OPT_NOT_MACHING_OPTION)
+            if (result == IFX_OPT_NOT_MACHING_OPTION)
             {
                 // Option not found, display the error, print help and exit
-                this->printHelpAndExit(argv[0], IFX_OPT_NOT_MACHING_OPTION, std::string("Error: Unrecognized option: ") + optArgv);
+                IFX_LOG_ERR(std::string("Unrecognized option: ") + optArgv);
+
+                if (retVal == IFX_OPT_RESULT_SUCCESS)
+                {
+                    retVal = result;
+                }
+
+                // Need to exit the main loop if there is error+exit condition
+                if (mNoExitOnError == false)
+                {
+                    break;
+                }
+            }
+            else if (result != IFX_OPT_RESULT_SUCCESS)
+            {
+                // Need to exit the main loop if there is error+exit condition
+                if (mNoExitOnError == false)
+                {
+                    break;
+                }
             }
         }
         else
@@ -287,9 +378,21 @@ int Opt::parseOpt(int argc, const char* argv[])
         }
     }
 
-    // Post verification
-    this->verifyAfterParsing(argv[0]);
+    // Post verification, only if there are no errors or exit is not requested
+    if (   retVal == IFX_OPT_RESULT_SUCCESS
+        || mNoExitOnError == true)
+    {
+        result = this->verifyAfterParsing(argv[0]);
+        if (retVal == IFX_OPT_RESULT_SUCCESS)
+        {
+            retVal = result;
+        }
+    }
 
+    if (retVal != IFX_OPT_RESULT_SUCCESS)
+    {
+        this->printHelpAndExitConditionally(argv[0], retVal);
+    }
 
     IFX_LOG_DBG("Opt::parseOpt END, return code = " << retVal);
 
