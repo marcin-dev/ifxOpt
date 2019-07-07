@@ -297,8 +297,6 @@ int Opt::parseOpt(int argc, const char* argv[])
                                 break;
                             }
                         }
-
-                        // TODO: trigger error if the value is mandatory
                     }
                 }
 

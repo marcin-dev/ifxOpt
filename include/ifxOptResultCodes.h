@@ -23,9 +23,10 @@ namespace ifx
 #define  IFX_OPT_VALUE_NOT_FOUND                (3)
 
 #define  IFX_OPT_ERROR_INVALID_ARGUMENTS        (-1)
-#define  IFX_OPT_ERROR_VALUE_CANNOT_EXTRACT     (-2)
-#define  IFX_OPT_ERROR_VALUE_OUT_OF_RANGE       (-3)
-#define  IFX_OPT_ERROR_CUSTOM_VALIDATION_FAILED (-4)
+#define  IFX_OPT_ERROR_OUT_OF_MEMORY            (-2)
+#define  IFX_OPT_ERROR_VALUE_CANNOT_EXTRACT     (-3)
+#define  IFX_OPT_ERROR_VALUE_OUT_OF_RANGE       (-4)
+#define  IFX_OPT_ERROR_CUSTOM_VALIDATION_FAILED (-5)
 
 } /* namespace ifx */
 

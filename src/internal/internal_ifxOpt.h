@@ -16,19 +16,21 @@ namespace ifx
 {
 
 template <typename T>
-void Opt::addOptEntry(const std::string  optLong,
-                      const char         optShort,
-                      const std::string  valName,
-                      std::string        helpString,
-                      T                 &target,
-                      OptionSet          options,
-                      Validator<T>      *validatorFn)
+int Opt::addOptEntry(const std::string  optLong,
+                     const char         optShort,
+                     const std::string  valName,
+                     std::string        helpString,
+                     T                 &target,
+                     OptionSet          options,
+                     Validator<T>      *validatorFn)
 {
+    int ret = IFX_OPT_RESULT_SUCCESS;
+
     if (   optShort == '\0'
         && optLong.empty() == true)
     {
-        // TODO: cannot add empty option, some error mechanism
-        exit(IFX_OPT_ERROR_INVALID_ARGUMENTS);
+        IFX_LOG_ERR("Cannot add empty option");
+        ret = IFX_OPT_ERROR_INVALID_ARGUMENTS;
     }
     else
     {
@@ -37,32 +39,37 @@ void Opt::addOptEntry(const std::string  optLong,
         {
             this->entries.push_back(opt);
         }
-        // else TODO: some error mechanism
+        else
+        {
+            ret = IFX_OPT_ERROR_OUT_OF_MEMORY;
+        }
     }
+
+    return ret;
 }
 
 template <typename T>
-void Opt::addOptEntry(const std::string  optLong,
-                      const char         optShort,
-                      const std::string  valName,
-                      std::string        helpString,
-                      T                 &target,
-                      OptionSet          options,
-                      std::function<bool(T)> validatorFn)
+int Opt::addOptEntry(const std::string  optLong,
+                     const char         optShort,
+                     const std::string  valName,
+                     std::string        helpString,
+                     T                 &target,
+                     OptionSet          options,
+                     std::function<bool(T)> validatorFn)
 {
-    this->addOptEntry<T>(optLong, optShort, valName, helpString, target, options, CustomValidator<T>(validatorFn));
+    return this->addOptEntry<T>(optLong, optShort, valName, helpString, target, options, CustomValidator<T>(validatorFn));
 }
 
 
-#define IFX_OPT_ADD_INSTANTIATE_TYPE(type)                                          \
-    template void Opt::addOptEntry<type>(const std::string  optLong,                \
+#define IFX_OPT_INSTANTIATE_TYPE_ADD_ENTRY(type)                                    \
+    template int Opt::addOptEntry<type>(const std::string  optLong,                 \
                                          const char         optShort,               \
                                          const std::string  valName,                \
                                          std::string        helpString,             \
                                          type              &target,                 \
                                          OptionSet          options     = IFX_OPTION_SET_CLEAR, \
                                          Validator<type>   *validatorFn = nullptr); \
-    template void Opt::addOptEntry<type>(const std::string  optLong,                \
+    template int Opt::addOptEntry<type>(const std::string  optLong,                 \
                                          const char         optShort,               \
                                          const std::string  valName,                \
                                          std::string        helpString,             \

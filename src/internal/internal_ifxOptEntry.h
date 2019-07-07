@@ -65,7 +65,7 @@ int OptEntry<T>::parseValue(const std::string &valStr)
 }
 
 
-#define IFX_OPT_ENTRY_INSTANTIATE_TYPE(type)                                    \
+#define IFX_OPT_INSTANTIATE_TYPE_OPT_ENTRY(type)                                \
     template int OptEntry<type>::parseValue(const std::string &valStr);         \
     template OptEntry<type>::OptEntry(const std::string  optLong,               \
                                       const char         optShort,              \

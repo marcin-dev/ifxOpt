@@ -25,7 +25,7 @@ private:
     std::list<OptEntryBase *> entries;      // TODO: make this as vector of shared pointers?
     std::list<OptEntryBase *> usedEntries;
     const std::string helpHeader;
-    const std::string helpEndnote;          // TODO: implement
+    const std::string helpEndnote;
     const bool  mAssignCharAllowed;         // can be configured, tells if there can be a '=' character before option and value arguments
     const bool  mNoExitOnError;             // can be configured, tells if the program should exit on parsing error
 
@@ -44,22 +44,22 @@ public:
     virtual ~Opt();
 
     template <typename T>
-    void addOptEntry(const std::string  optLong,
-                     const char         optShort,
-                     const std::string  valName,
-                     std::string        helpString,
-                     T                 &target,
-                     OptionSet          options,
-                     Validator<T>      *validatorFn = nullptr);
+    int addOptEntry(const std::string  optLong,
+                    const char         optShort,
+                    const std::string  valName,
+                    std::string        helpString,
+                    T                 &target,
+                    OptionSet          options,
+                    Validator<T>      *validatorFn = nullptr);
 
     template <typename T>
-    void addOptEntry(const std::string  optLong,
-                     const char         optShort,
-                     const std::string  valName,
-                     std::string        helpString,
-                     T                 &target,
-                     OptionSet          options,
-                     std::function<bool(T)> validatorFn);
+    int addOptEntry(const std::string  optLong,
+                    const char         optShort,
+                    const std::string  valName,
+                    std::string        helpString,
+                    T                 &target,
+                    OptionSet          options,
+                    std::function<bool(T)> validatorFn);
 
     int parseOpt(int argc, const char* argv[]);
 

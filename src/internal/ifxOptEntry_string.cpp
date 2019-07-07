@@ -24,8 +24,8 @@ namespace ifx
 // Instantiation of Opt class methods and OptEntry class
 // ****************************************************************************
 
-IFX_OPT_ADD_INSTANTIATE_TYPE(std::string);
-IFX_OPT_ENTRY_INSTANTIATE_TYPE(std::string);
+IFX_OPT_INSTANTIATE_TYPE_ADD_ENTRY(std::string);
+IFX_OPT_INSTANTIATE_TYPE_OPT_ENTRY(std::string);
 
 // ****************************************************************************
 // Implementation of OptEntry::parseValue method

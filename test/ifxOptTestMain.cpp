@@ -28,11 +28,15 @@ bool validateText(std::string val)
     return true;
 }
 
+static const char *helpEndnote =
+"Copyright: InFoX\n\
+2019";
+
 int parseOpt(int argc, const char **argv)
 {
     //ifx::OptionSet optionSet = IFX_OPT_ALLOW_ARG_ASSIGN_CHAR | IFX_OPT_NO_EXIT_ON_ERROR;
     ifx::OptionSet optionSet = IFX_OPT_ALLOW_ARG_ASSIGN_CHAR;
-    ifx::Opt opt(optionSet, "Option Parser ifx::Opt test program");
+    ifx::Opt opt(optionSet, "Option Parser ifx::Opt test program", helpEndnote);
     int number = -50;
     int retVal;
     std::string text = "not changed";
@@ -40,11 +44,12 @@ int parseOpt(int argc, const char **argv)
     opt.addOptEntry<int>("number", 'n', "value",
                          "Any integer number between -10 and 10",
                          number, IFX_OPT_ENTRY_MANDATORY, validateNumber);
-    //opt.addOptEntry<int>("number", 'n', number);
-    //opt.addOptEntry<std::string>("text", 't', text, validateText);
     opt.addOptEntry<std::string>("text", 't', "anything",
                                  "Any text is accepted",
-                                 text, IFX_OPTION_SET_CLEAR, validateText);
+                                 text, IFX_OPTION_SET_CLEAR);
+//    opt.addOptEntry<std::string>("text", 't', "anything",
+//                                 "Any text is accepted",
+//                                 text, IFX_OPTION_SET_CLEAR, validateText);
 
     retVal = opt.parseOpt(argc, argv);
 
