@@ -8,7 +8,8 @@
 #ifndef INCLUDE_IFXOPT_H
 #define INCLUDE_IFXOPT_H
 
-#include <list>
+#include <vector>
+#include <memory>
 #include <functional>
 
 #include "ifxOptResultCodes.h"
@@ -22,8 +23,8 @@ namespace ifx
 class Opt
 {
 private:
-    std::list<OptEntryBase *> entries;      // TODO: make this as vector of shared pointers?
-    std::list<OptEntryBase *> usedEntries;
+    std::vector<std::shared_ptr<OptEntryBase>> mEntries;
+    std::vector<std::shared_ptr<OptEntryBase>> mUsedEntries;
     const std::string helpHeader;
     const std::string helpEndnote;
     const bool  mAssignCharAllowed;         // can be configured, tells if there can be a '=' character before option and value arguments

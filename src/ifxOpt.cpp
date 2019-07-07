@@ -19,8 +19,8 @@ namespace ifx
 #define OPTIONS_HELP_LEN_INDENT_END     ((size_t)26)
 
 Opt::Opt(OptionSet options, const std::string helpHeader, std::string helpEndnote)
-: entries(),
-  usedEntries(),
+: mEntries(),
+  mUsedEntries(),
   helpHeader (helpHeader),
   helpEndnote(helpEndnote),
   mAssignCharAllowed(IFX_OPTION_CHECK(options, IFX_OPT_ALLOW_ARG_ASSIGN_CHAR)),
@@ -28,13 +28,7 @@ Opt::Opt(OptionSet options, const std::string helpHeader, std::string helpEndnot
 { }
 
 Opt::~Opt()
-{
-    // Cleanup all allocated entries
-    for (OptEntryBase *e : entries)
-    {
-        delete e;
-    }
-}
+{ }
 
 const char *Opt::getOption(const char* in, std::string &argStr, char &argChar)
 {
@@ -82,15 +76,14 @@ int Opt::verifyAfterParsing(const char *argv0) const
     int ret = IFX_OPT_RESULT_SUCCESS;
 
     // Check for missed mandatory entries
-    for (const OptEntryBase * const &e : this->entries) // could wrote auto e, but wanted to learn the explicit type
+    for (auto &&e : this->mEntries)
     {
         if (e->isMandatory() == true)
         {
             // Check if the mandatory option argument is consumed
-            auto it = std::find(this->usedEntries.begin(), this->usedEntries.end(), e);
-            if (it == this->usedEntries.end())
+            if (e.use_count() == 1)
             {
-                // Not fund on the consumed list, error
+                // Single reference means that it is not consumed, error
                 std::string optionUsageString;
                 e->getUsageString(optionUsageString);
 
@@ -119,7 +112,7 @@ std::string *Opt::generateHelp(const char *argv0, std::string headerStr, std::st
 
         std::string optionsHelp = "Options:";
 
-        for (const OptEntryBase * const &e : entries)
+        for (auto &&e : mEntries)
         {
             std::string optionUsageString;
 
@@ -234,8 +227,7 @@ int Opt::parseOpt(int argc, const char* argv[])
 
             IFX_LOG_DBG("Opt::parseOpt option found, long: " << argStr << ", short: " << argChar);
 
-            //for (auto&& e : entries)
-            for (OptEntryBase *&e : entries)
+            for (auto&& e : mEntries)
             {
                 IFX_LOG_DBG("optEntry START");
                 result = e->parseOpt(argStr, argChar);
@@ -322,7 +314,7 @@ int Opt::parseOpt(int argc, const char* argv[])
                     // Found match and extracted the value successfully
 
                     // Copy the entry pointer to consumed list
-                    this->usedEntries.push_back(e);
+                    this->mUsedEntries.push_back(e);
 
                     break;
                 }

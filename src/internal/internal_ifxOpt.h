@@ -37,7 +37,7 @@ int Opt::addOptEntry(const std::string  optLong,
         OptEntryBase *opt = new OptEntry<T>(optLong, optShort, valName, helpString, target, options, validatorFn);
         if (opt != nullptr)
         {
-            this->entries.push_back(opt);
+            this->mEntries.push_back(std::shared_ptr<OptEntryBase>(opt));
         }
         else
         {
