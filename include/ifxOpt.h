@@ -9,13 +9,13 @@
 #define INCLUDE_IFXOPT_H
 
 #include <vector>
-#include <memory>
 #include <functional>
 
 #include "ifxOptResultCodes.h"
 #include "ifxOptOptionCodes.h"
 #include "ifxOptEntry.h"
 #include "ifxValidator.h"
+#include "utils/ifxSharedPtr.h"
 
 namespace ifx
 {
@@ -23,8 +23,8 @@ namespace ifx
 class Opt
 {
 private:
-    std::vector<std::shared_ptr<OptEntryBase>> mEntries;
-    std::vector<std::shared_ptr<OptEntryBase>> mUsedEntries;
+    std::vector<SharedPtr<OptEntryBase>> mEntries;
+    std::vector<SharedPtr<OptEntryBase>> mUsedEntries;
     const std::string helpHeader;
     const std::string helpEndnote;
     const bool  mAssignCharAllowed;         // can be configured, tells if there can be a '=' character before option and value arguments

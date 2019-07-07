@@ -81,7 +81,7 @@ int Opt::verifyAfterParsing(const char *argv0) const
         if (e->isMandatory() == true)
         {
             // Check if the mandatory option argument is consumed
-            if (e.use_count() == 1)
+            if (e.refCount() == 1)
             {
                 // Single reference means that it is not consumed, error
                 std::string optionUsageString;
