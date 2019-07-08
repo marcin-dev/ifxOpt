@@ -11,7 +11,7 @@
 #include <vector>
 #include <functional>
 
-#include "ifxOptEntry.h"
+#include "ifxOptEntryBase.h"
 #include "ifxValidator.h"
 
 namespace ifx

@@ -9,9 +9,9 @@
 #include <climits>
 #include <string>
 
-#include "internal_ifxOpt.h"
-#include "internal_ifxOptEntry.h"
 #include "ifxDbg.h"
+#include "internal_ifxOptEntryImpl.h"
+#include "internal_ifxOptImpl.h"
 
 namespace ifx
 {

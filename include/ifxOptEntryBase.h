@@ -1,16 +1,16 @@
 /**
- * ifxOptEntry.h
+ * ifxOptEntryBase.h
  *
- * @date   2019.06
+ * @date   2019.07
  * @author man
  */
 
-#ifndef INCLUDE_IFXOPT_ENTRY_H
-#define INCLUDE_IFXOPT_ENTRY_H
+#ifndef INCLUDE_IFXOPT_ENTRY_BASE_H
+#define INCLUDE_IFXOPT_ENTRY_BASE_H
 
 #include <string>
 
-#include "ifxValidator.h"
+#include "ifxOptResultCodes.h"
 #include "ifxOptOptionCodes.h"
 
 namespace ifx
@@ -49,30 +49,6 @@ public:
     bool isFlag() const;
 };
 
-template <typename T>
-class OptEntry : public OptEntryBase
-{
-protected:
-    T                 &mTarget;
-    Validator<T>      *mValidator;
-
-public:
-    OptEntry(const std::string  optLong,
-             const char         optShort,
-             const std::string  valName,
-             std::string        helpString,
-             T                 &target,
-             OptionSet          options,
-             Validator<T>      *validator = nullptr);
-
-    virtual ~OptEntry();
-
-    virtual int parseValue(const std::string &valStr);
-
-    // The following function needs to be defined in each type-specific implementation
-    int parseValueTypeImpl(const std::string &valStr, T &value);
-};
-
 } /* namespace ifx */
 
-#endif /* INCLUDE_IFXOPT_ENTRY_H */
+#endif /* INCLUDE_IFXOPT_ENTRY_BASE_H */

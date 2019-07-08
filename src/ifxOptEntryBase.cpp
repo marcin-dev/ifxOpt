@@ -1,12 +1,12 @@
 /**
- * ifxOptEntry.cpp
+ * ifxOptEntryBase.cpp
  *
  * @date   2019.06
  * @author man
  */
 
 #include <ifxOptResultCodes.h>
-#include <ifxOptEntry.h>
+#include <ifxOptEntryBase.h>
 
 #include "internal/ifxDbg.h"
 

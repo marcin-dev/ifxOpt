@@ -5,8 +5,8 @@
  * @author man
  */
 
-#ifndef INTERNAL_IFXOPT_H
-#define INTERNAL_IFXOPT_H
+#ifndef INTERNAL_IFXOPT_IMPL_H
+#define INTERNAL_IFXOPT_IMPL_H
 
 #include <ifxOpt.h>
 #include "ifxCustomValidator.h"
@@ -79,4 +79,4 @@ int Opt::addOptEntry(const std::string  optLong,
 
 } /* namespace ifx */
 
-#endif /* INTERNAL_IFXOPT_H */
+#endif /* INTERNAL_IFXOPT_IMPL_H */

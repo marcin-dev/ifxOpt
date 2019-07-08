@@ -5,12 +5,12 @@
  * @author man
  */
 
-#ifndef INTERNAL_IFXOPT_ENTRY_H
-#define INTERNAL_IFXOPT_ENTRY_H
+#ifndef INTERNAL_IFXOPT_ENTRY_IMPL_H
+#define INTERNAL_IFXOPT_ENTRY_IMPL_H
 
 #include <string>
 
-#include <ifxOptEntry.h>
+#include "ifxOptEntry.h"
 #include "ifxDbg.h"
 
 namespace ifx
@@ -79,4 +79,4 @@ int OptEntry<T>::parseValue(const std::string &valStr)
 
 } /* namespace ifx */
 
-#endif /* INTERNAL_IFXOPT_ENTRY_H */
+#endif /* INTERNAL_IFXOPT_ENTRY_IMPL_H */

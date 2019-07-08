@@ -3,7 +3,7 @@ set(target_name  ifxOpt)
 
 set(source_files
     ifxOpt.cpp
-    ifxOptEntry.cpp
+    ifxOptEntryBase.cpp
     internal/ifxOptEntry_int.cpp
     internal/ifxOptEntry_string.cpp
     )
