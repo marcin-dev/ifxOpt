@@ -34,7 +34,7 @@ public:
 
     virtual ~OptEntryBase();
 
-//    void getUsageString(std::string &optionUsageString) const;
+    void getUsageString(std::string &optionUsageString) const;
     const std::string &getHelpString()  const;
     const std::string &getValName()     const;
     const std::string &getOptLong()     const;

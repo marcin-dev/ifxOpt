@@ -27,7 +27,7 @@ private:
     Validator             mValidatorFn;
     std::vector<T>        mChoices;
 
-    static std::string genValNameFromChoices(std::vector<T> &choices);
+//    static std::string genValNameFromChoices(std::vector<T> &choices);
 
 public:
     OptEntry(const std::string  optLong,

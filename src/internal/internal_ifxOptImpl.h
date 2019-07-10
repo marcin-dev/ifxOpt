@@ -51,12 +51,12 @@ int Opt::addOptEntry(const std::string  optLong,
 
 template <typename T>
 int Opt::addOptEntry(const std::string  optLong,
-					 const char         optShort,
-					 const std::string  valName,
-					 const std::string  helpString,
-					 T                 &target,
-					 std::vector<T>     choices,
-					 OptionSet          options)
+                     const char         optShort,
+                     const std::string  valName,
+                     const std::string  helpString,
+                     T                 &target,
+                     std::vector<T>     choices,
+                     OptionSet          options)
 {
     int ret = IFX_OPT_RESULT_SUCCESS;
 
@@ -89,26 +89,26 @@ int Opt::addOptEntry(const std::string  optLong,
 
 template <typename T>
 int Opt::addOptEntry(const std::string  optLong,
-                	 const char         optShort,
-                	 const std::string  valName,
-                	 const std::string  helpString,
-                	 T                 &target,
-                	 const T           *choices,
-                	 size_t             choicesSize,
-                	 OptionSet          options)
+                     const char         optShort,
+                     const std::string  valName,
+                     const std::string  helpString,
+                     T                 &target,
+                     const T           *choices,
+                     size_t             choicesSize,
+                     OptionSet          options)
 {
-	int ret;
+    int ret;
 
-	if (choices == nullptr || choicesSize == 0u)
-	{
-		ret = IFX_OPT_ERROR_INVALID_ARGUMENTS;
-	}
-	else
-	{
-		ret = addOptEntry(optLong, optShort, valName, helpString, target, std::vector<T>(choices, choices+choicesSize), options);
-	}
+    if (choices == nullptr || choicesSize == 0u)
+    {
+        ret = IFX_OPT_ERROR_INVALID_ARGUMENTS;
+    }
+    else
+    {
+        ret = addOptEntry(optLong, optShort, valName, helpString, target, std::vector<T>(choices, choices+choicesSize), options);
+    }
 
-	return ret;
+    return ret;
 }
 
 #define IFX_OPT_INSTANTIATE_TYPE_ADD_ENTRY(type)                                    \
@@ -119,13 +119,13 @@ int Opt::addOptEntry(const std::string  optLong,
                                          type              &target,                 \
                                          OptionSet          options = IFX_OPTION_SET_CLEAR, \
                                          std::function<bool(type)> validatorFn = nullptr);  \
-	template int Opt::addOptEntry<type>(const std::string   optLong,                \
-									  	const char          optShort,               \
-									  	const std::string   valName,                \
-									  	const std::string   helpString,             \
-									  	type               &target,                 \
-										std::vector<type>   choices,				\
-										OptionSet           options = IFX_OPTION_SET_CLEAR)
+    template int Opt::addOptEntry<type>(const std::string   optLong,                \
+                                          const char          optShort,             \
+                                          const std::string   valName,              \
+                                          const std::string   helpString,           \
+                                          type               &target,               \
+                                          std::vector<type>   choices,              \
+                                          OptionSet           options = IFX_OPTION_SET_CLEAR)
 } /* namespace ifx */
 
 #endif /* INTERNAL_IFXOPT_IMPL_H */
