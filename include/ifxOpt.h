@@ -52,6 +52,25 @@ public:
                     OptionSet          options = IFX_OPTION_SET_CLEAR,
                     std::function<bool(T)> validatorFn = nullptr);
 
+    template <typename T>
+    int addOptEntry(const std::string  optLong,
+                    const char         optShort,
+                    const std::string  valName,
+                    const std::string  helpString,
+                    T                 &target,
+                    std::vector<T>     choices,
+                    OptionSet          options = IFX_OPTION_SET_CLEAR);
+
+    template <typename T>
+    int addOptEntry(const std::string  optLong,
+                    const char         optShort,
+                    const std::string  valName,
+                    const std::string  helpString,
+                    T                 &target,
+                    const T           *choices,
+                    size_t             choicesSize,
+                    OptionSet          options = IFX_OPTION_SET_CLEAR);
+
     int parseOpt(int argc, const char* argv[]);
 
     void printHelpAndExit(const char *argv0, int exitStatus) const;

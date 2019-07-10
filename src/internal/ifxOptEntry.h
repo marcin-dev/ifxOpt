@@ -9,15 +9,12 @@
 #define INTERNAL_IFXOPT_ENTRY_H
 
 #include <functional>
+#include <vector>
 
 #include <ifxOptEntryBase.h>
 
 namespace ifx
 {
-
-// Alias for the function type
-template <typename T>
-using ValidatorFn = std::function<bool(T)>;
 
 // Internal class for unified option handling
 template <typename T>
@@ -25,10 +22,12 @@ class OptEntry : public OptEntryBase
 {
     typedef std::function<bool(T)> Validator;
 
-protected:
-    T                 &mTarget;
-    Validator          mValidatorFn;
-    //Validator<T>      *mValidator;
+private:
+    T                    &mTarget;
+    Validator             mValidatorFn;
+    std::vector<T>        mChoices;
+
+    static std::string genValNameFromChoices(std::vector<T> &choices);
 
 public:
     OptEntry(const std::string  optLong,
@@ -38,6 +37,14 @@ public:
              T                 &target,
              OptionSet          options     = IFX_OPTION_SET_CLEAR,
              Validator        &&validatorFn = nullptr);
+
+    OptEntry(const std::string  optLong,
+             const char         optShort,
+             const std::string  valName,
+             const std::string  helpString,
+             T                 &target,
+             std::vector<T>   &&choices,
+             OptionSet          options = IFX_OPTION_SET_CLEAR);
 
     virtual ~OptEntry();
 
