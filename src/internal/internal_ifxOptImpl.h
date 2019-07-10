@@ -52,7 +52,6 @@ int Opt::addOptEntry(const std::string  optLong,
 template <typename T>
 int Opt::addOptEntry(const std::string  optLong,
                      const char         optShort,
-                     const std::string  valName,
                      const std::string  helpString,
                      T                 &target,
                      std::vector<T>     choices,
@@ -73,7 +72,7 @@ int Opt::addOptEntry(const std::string  optLong,
     }
     else
     {
-        OptEntryBase *opt = new OptEntry<T>(optLong, optShort, valName, helpString, target, std::move(choices), options);
+        OptEntryBase *opt = new OptEntry<T>(optLong, optShort, helpString, target, std::move(choices), options);
         if (opt != nullptr)
         {
             this->mEntries.push_back(opt);
@@ -105,7 +104,7 @@ int Opt::addOptEntry(const std::string  optLong,
     }
     else
     {
-        ret = addOptEntry(optLong, optShort, valName, helpString, target, std::vector<T>(choices, choices+choicesSize), options);
+        ret = addOptEntry(optLong, optShort, helpString, target, std::vector<T>(choices, choices+choicesSize), options);
     }
 
     return ret;
@@ -121,7 +120,6 @@ int Opt::addOptEntry(const std::string  optLong,
                                          std::function<bool(type)> validatorFn = nullptr);  \
     template int Opt::addOptEntry<type>(const std::string   optLong,                \
                                           const char          optShort,             \
-                                          const std::string   valName,              \
                                           const std::string   helpString,           \
                                           type               &target,               \
                                           std::vector<type>   choices,              \

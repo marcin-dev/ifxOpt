@@ -41,7 +41,8 @@ int parseOpt(int argc, const char **argv)
     int number2 = -60;
     int number3 = -70;
     int retVal;
-    std::string text = "not changed";
+    std::string text  = "not changed";
+    std::string text2 = "not changed2";
 
 
     int  a[] = {1,2,3};
@@ -64,13 +65,17 @@ int parseOpt(int argc, const char **argv)
                                  "Any text is accepted",
                                  text, IFX_OPTION_SET_CLEAR);
 
-    opt.addOptEntry<int>("enum", 'e', "choice",
+    opt.addOptEntry<int>("enum", 'e',
                          "Number in range 1-3",
                          number2, {1,2,3,-1}, IFX_OPTION_SET_CLEAR);
 
-    opt.addOptEntry<int>("charenum", 'c', "choice",
+    opt.addOptEntry<int>("charenum", 'c',
                          "Number in range 1-3",
                          number3, test3, IFX_OPTION_SET_CLEAR);
+
+    opt.addOptEntry<std::string>("stringenum", 's',
+                         "Number in range 1-3",
+                         text2, {"aa", "bb", "cc"}, IFX_OPTION_SET_CLEAR);
 //    opt.addOptEntry<std::string>("text", 't', "anything",
 //                                 "Any text is accepted",
 //                                 text, IFX_OPTION_SET_CLEAR, validateText);
@@ -82,7 +87,8 @@ int parseOpt(int argc, const char **argv)
         std::cout << LOG_TAG "parsed number1: " << number1 << std::endl;
         std::cout << LOG_TAG "parsed number2: " << number2 << std::endl;
         std::cout << LOG_TAG "parsed number3: " << number3 << std::endl;
-        std::cout << LOG_TAG "parsed text  : " << text << std::endl;
+        std::cout << LOG_TAG "parsed text  : " << text  << std::endl;
+        std::cout << LOG_TAG "parsed text  : " << text2 << std::endl;
     //}
 
     return retVal;

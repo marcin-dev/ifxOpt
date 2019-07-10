@@ -32,6 +32,12 @@ IFX_OPT_INSTANTIATE_TYPE_OPT_ENTRY(std::string);
 // ****************************************************************************
 
 template <>
+std::string OptEntry<std::string>::toString(std::string &value)
+{
+    return value;
+}
+
+template <>
 int OptEntry<std::string>::parseValueTypeImpl(const std::string &valStr, std::string &value)
 {
     int retVal = IFX_OPT_RESULT_SUCCESS;

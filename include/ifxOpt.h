@@ -55,7 +55,6 @@ public:
     template <typename T>
     int addOptEntry(const std::string  optLong,
                     const char         optShort,
-                    const std::string  valName,
                     const std::string  helpString,
                     T                 &target,
                     std::vector<T>     choices,

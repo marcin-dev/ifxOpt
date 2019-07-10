@@ -31,6 +31,12 @@ IFX_OPT_INSTANTIATE_TYPE_OPT_ENTRY(int);
 // ****************************************************************************
 
 template <>
+std::string OptEntry<int>::toString(int &value)
+{
+    return std::to_string(value);
+}
+
+template <>
 int OptEntry<int>::parseValueTypeImpl(const std::string &valStr, int &value)
 {
     // Using C-style procedure to avoid exceptions

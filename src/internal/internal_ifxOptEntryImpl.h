@@ -31,32 +31,31 @@ OptEntry<T>::OptEntry(const std::string  optLong,
 template <typename T>
 OptEntry<T>::OptEntry(const std::string  optLong,
                          const char         optShort,
-                         const std::string  valName,
                          const std::string  helpString,
                          T                 &target,
                          std::vector<T>   &&choices,
                          OptionSet          options)
-                         : OptEntryBase(optLong, optShort, valName, helpString, options), mTarget(target), mValidatorFn(nullptr), mChoices(choices)
+                         : OptEntryBase(optLong, optShort, genValNameFromChoices(choices), helpString, options), mTarget(target), mValidatorFn(nullptr), mChoices(choices)
 { }
 
 template <typename T>
 OptEntry<T>::~OptEntry()
 { }
 
-//template <typename T>
-//std::string OptEntry<T>::genValNameFromChoices(std::vector<T> &choices)
-//{
-//    std::string valName;
-//
-//    //for (std::vector<T>::iterator it = choices.begin(); it != choices.end(); ++it)
-//    for (const T &choice : choices)
-//    {
-//        valName += static_cast<std::string>(choice) + "|";
-//    }
-//
-//    valName.pop_back();
-//    return valName;
-//}
+template <typename T>
+std::string OptEntry<T>::genValNameFromChoices(std::vector<T> &choices)
+{
+    std::string valName;
+
+    //for (std::vector<T>::iterator it = choices.begin(); it != choices.end(); ++it)
+    for (T &choice : choices)
+    {
+        valName += toString(choice) + "|";
+    }
+
+    valName.pop_back();
+    return valName;
+}
 
 template <typename T>
 int OptEntry<T>::parseValue(const std::string &valStr)
@@ -108,7 +107,6 @@ int OptEntry<T>::parseValue(const std::string &valStr)
                                       Validator        &&validatorFn = nullptr);  \
     template OptEntry<type>::OptEntry(const std::string  optLong,               \
                                       const char         optShort,              \
-                                      const std::string  valName,               \
                                       const std::string  helpString,            \
                                       type              &target,                \
                                       std::vector<type> &&choices,              \

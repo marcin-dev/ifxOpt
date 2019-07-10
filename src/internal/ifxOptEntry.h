@@ -27,7 +27,10 @@ private:
     Validator             mValidatorFn;
     std::vector<T>        mChoices;
 
-//    static std::string genValNameFromChoices(std::vector<T> &choices);
+    // The following function needs to be defined in each type-specific implementation
+    static std::string toString(T &value);
+
+    static std::string genValNameFromChoices(std::vector<T> &choices);
 
 public:
     OptEntry(const std::string  optLong,
@@ -40,7 +43,6 @@ public:
 
     OptEntry(const std::string  optLong,
              const char         optShort,
-             const std::string  valName,
              const std::string  helpString,
              T                 &target,
              std::vector<T>   &&choices,
