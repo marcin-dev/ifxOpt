@@ -16,7 +16,7 @@ namespace ifx
 OptEntryBase::OptEntryBase(const std::string  optLong,
                            const char         optShort,
                            const std::string  valName,
-                           std::string        helpString,
+                           const std::string  helpString,
                            OptionSet          options)
                            : mHelpString(helpString),
                              mValName(valName),

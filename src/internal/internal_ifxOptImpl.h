@@ -8,8 +8,9 @@
 #ifndef INTERNAL_IFXOPT_IMPL_H
 #define INTERNAL_IFXOPT_IMPL_H
 
+#include <utility>
+
 #include <ifxOpt.h>
-#include "ifxCustomValidator.h"
 #include "ifxDbg.h"
 
 namespace ifx
@@ -19,10 +20,10 @@ template <typename T>
 int Opt::addOptEntry(const std::string  optLong,
                      const char         optShort,
                      const std::string  valName,
-                     std::string        helpString,
+                     const std::string  helpString,
                      T                 &target,
                      OptionSet          options,
-                     Validator<T>      *validatorFn)
+                     std::function<bool(T)> validatorFn)
 {
     int ret = IFX_OPT_RESULT_SUCCESS;
 
@@ -34,7 +35,7 @@ int Opt::addOptEntry(const std::string  optLong,
     }
     else
     {
-        OptEntryBase *opt = new OptEntry<T>(optLong, optShort, valName, helpString, target, options, validatorFn);
+        OptEntryBase *opt = new OptEntry<T>(optLong, optShort, valName, helpString, target, options, std::move(validatorFn));
         if (opt != nullptr)
         {
             this->mEntries.push_back(opt);
@@ -48,34 +49,14 @@ int Opt::addOptEntry(const std::string  optLong,
     return ret;
 }
 
-template <typename T>
-int Opt::addOptEntry(const std::string  optLong,
-                     const char         optShort,
-                     const std::string  valName,
-                     std::string        helpString,
-                     T                 &target,
-                     OptionSet          options,
-                     std::function<bool(T)> validatorFn)
-{
-    return this->addOptEntry<T>(optLong, optShort, valName, helpString, target, options, CustomValidator<T>(validatorFn));
-}
-
-
 #define IFX_OPT_INSTANTIATE_TYPE_ADD_ENTRY(type)                                    \
-    template int Opt::addOptEntry<type>(const std::string  optLong,                 \
+    template int Opt::addOptEntry<type>(const std::string   optLong,                \
                                          const char         optShort,               \
                                          const std::string  valName,                \
-                                         std::string        helpString,             \
+                                         const std::string  helpString,             \
                                          type              &target,                 \
-                                         OptionSet          options     = IFX_OPTION_SET_CLEAR, \
-                                         Validator<type>   *validatorFn = nullptr); \
-    template int Opt::addOptEntry<type>(const std::string  optLong,                 \
-                                         const char         optShort,               \
-                                         const std::string  valName,                \
-                                         std::string        helpString,             \
-                                         type              &target,                 \
-                                         OptionSet          options,                \
-                                         std::function<bool(type)> validatorFn)
+                                         OptionSet          options = IFX_OPTION_SET_CLEAR, \
+                                         std::function<bool(type)> validatorFn = nullptr);
 
 } /* namespace ifx */
 

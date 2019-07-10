@@ -8,12 +8,6 @@
 #ifndef INCLUDE_IFXOPT_RESULT_CODES_H
 #define INCLUDE_IFXOPT_RESULT_CODES_H
 
-#include <vector>
-#include <functional>
-
-#include "ifxOptEntryBase.h"
-#include "ifxValidator.h"
-
 namespace ifx
 {
 

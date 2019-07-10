@@ -20,21 +20,16 @@ template <typename T>
 OptEntry<T>::OptEntry(const std::string  optLong,
                       const char         optShort,
                       const std::string  valName,
-                      std::string        helpString,
+                      const std::string  helpString,
                       T                 &target,
                       OptionSet          options,
-                      Validator<T>      *validator)
-                      : OptEntryBase(optLong, optShort, valName, helpString, options), mTarget(target), mValidator(validator)
-{}
+                      Validator        &&validatorFn)
+                      : OptEntryBase(optLong, optShort, valName, helpString, options), mTarget(target), mValidatorFn(validatorFn)
+{ }
 
 template <typename T>
 OptEntry<T>::~OptEntry()
-{
-    if (mValidator != nullptr)
-    {
-        delete mValidator;
-    }
-}
+{ }
 
 template <typename T>
 int OptEntry<T>::parseValue(const std::string &valStr)
@@ -47,8 +42,8 @@ int OptEntry<T>::parseValue(const std::string &valStr)
     if (retVal == IFX_OPT_RESULT_SUCCESS)
     {
         // Good extraction, run validation procedure
-        if (   this->mValidator == nullptr
-            || (*this->mValidator)(value) == true)
+        if (   false == static_cast<bool>(mValidatorFn) // if there is no function provided
+            || true  == mValidatorFn(value))            // or if the validation succeeded
         {
             // Validation ok, store the value in target reference
             this->mTarget = value;
@@ -70,10 +65,10 @@ int OptEntry<T>::parseValue(const std::string &valStr)
     template OptEntry<type>::OptEntry(const std::string  optLong,               \
                                       const char         optShort,              \
                                       const std::string  valName,               \
-                                      std::string        helpString,            \
+                                      const std::string  helpString,            \
                                       type              &target,                \
-                                      OptionSet          options   = IFX_OPTION_SET_CLEAR, \
-                                      Validator<type>   *validator = nullptr);  \
+                                      OptionSet          options     = IFX_OPTION_SET_CLEAR, \
+                                      Validator        &&validatorFn = nullptr);  \
     template OptEntry<type>::~OptEntry()
 
 

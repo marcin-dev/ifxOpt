@@ -23,13 +23,13 @@ private:
     const std::string  mValName;
     const std::string  mOptLong;
     const char         mOptShort;
-    bool               mMandatory;
+    const bool         mMandatory;
 
 public:
     OptEntryBase(const std::string  optLong,
                  const char         optShort,
                  const std::string  valName,
-                 std::string        helpString,
+                 const std::string  helpString,
                  OptionSet          options);
 
     virtual ~OptEntryBase();

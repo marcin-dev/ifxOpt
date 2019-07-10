@@ -14,7 +14,6 @@
 #include "ifxOptEntryBase.h"
 #include "ifxOptResultCodes.h"
 #include "ifxOptOptionCodes.h"
-#include "ifxValidator.h"
 #include "utils/ifxSharedPtr.h"
 
 namespace ifx
@@ -48,19 +47,10 @@ public:
     int addOptEntry(const std::string  optLong,
                     const char         optShort,
                     const std::string  valName,
-                    std::string        helpString,
+                    const std::string  helpString,
                     T                 &target,
-                    OptionSet          options,
-                    Validator<T>      *validatorFn = nullptr);
-
-    template <typename T>
-    int addOptEntry(const std::string  optLong,
-                    const char         optShort,
-                    const std::string  valName,
-                    std::string        helpString,
-                    T                 &target,
-                    OptionSet          options,
-                    std::function<bool(T)> validatorFn);
+                    OptionSet          options = IFX_OPTION_SET_CLEAR,
+                    std::function<bool(T)> validatorFn = nullptr);
 
     int parseOpt(int argc, const char* argv[]);
 
