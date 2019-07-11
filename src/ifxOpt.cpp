@@ -165,24 +165,34 @@ std::string *Opt::generateHelp(const char *argv0, std::string headerStr, std::st
     return help;
 }
 
-void Opt::printHelpAndExit(const char *argv0, int exitStatus) const
+void Opt::printHelpAndExit(const char *argv0, int exitStatus)
 {
-    std::unique_ptr<std::string> helpUPtr(this->generateHelp(argv0, this->helpHeader, this->helpEndnote));
+    std::string *helpStr = this->generateHelp(argv0, this->helpHeader, this->helpEndnote);
 
-    std::cout << *helpUPtr << std::endl;
+    std::cout << *helpStr << std::endl;
+
+    delete helpStr;
+
+    mUsedEntries.clear();
+    mEntries.clear();
 
     IFX_LOG_DBG("Exiting with code: " << exitStatus);
     exit(exitStatus);
 }
 
-void Opt::printHelpAndExitConditionally(const char *argv0, int exitStatus) const
+void Opt::printHelpAndExitConditionally(const char *argv0, int exitStatus)
 {
-    std::unique_ptr<std::string> helpUPtr(this->generateHelp(argv0));
+    { // just to play with unique_ptr
+        std::unique_ptr<std::string> helpUPtr(this->generateHelp(argv0));
 
-    std::cout << *helpUPtr << std::endl;
+        std::cout << *helpUPtr << std::endl;
+    }
 
     if (mNoExitOnError == false)
     {
+        mUsedEntries.clear();
+        mEntries.clear();
+
         IFX_LOG_DBG("Exiting with code: " << exitStatus);
         exit(exitStatus);
     }
@@ -201,9 +211,6 @@ int Opt::parseOpt(int argc, const char* argv[])
     std::string  valStr;
     const char  *optArgv;
     char         argChar;
-
-    // TODO:
-    // trim each argv
 
     IFX_LOG_DBG("Opt::parseOpt START, argc = " << argc);
 

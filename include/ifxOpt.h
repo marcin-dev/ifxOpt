@@ -34,7 +34,7 @@ private:
     int verifyAfterParsing(const char *argv0) const;
 
     std::string *generateHelp(const char *argv0, std::string headerStr = std::string(), std::string footerStr = std::string()) const;
-    void printHelpAndExitConditionally(const char *argv0, int exitStatus) const;
+    void printHelpAndExitConditionally(const char *argv0, int exitStatus);
 
     // Non-copyable
     Opt(const Opt &);
@@ -72,7 +72,7 @@ public:
 
     int parseOpt(int argc, const char* argv[]);
 
-    void printHelpAndExit(const char *argv0, int exitStatus) const;
+    void printHelpAndExit(const char *argv0, int exitStatus);
 };
 
 } /* namespace ifx */

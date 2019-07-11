@@ -46,17 +46,8 @@ int parseOpt(int argc, const char **argv)
 
 
     int  a[] = {1,2,3};
-    //int *b   = {4,5,6};
 
-    //std::vector<int> test1 = a;
-    //std::vector<int> test2 = b;
     std::vector<int> test3 = { 7,8,9 };
-//    std::cout << "test3 size:" << test3.size() << std::endl;
-//
-//    std::cout << "The contents of test3 are:";
-//    for (std::vector<int>::iterator it = test3.begin(); it != test3.end(); ++it)
-//      std::cout << ' ' << *it;
-//    std::cout << '\n';
 
     opt.addOptEntry<int>("number", 'n', "value",
                          "Any integer number between -10 and 10",
@@ -76,9 +67,9 @@ int parseOpt(int argc, const char **argv)
     opt.addOptEntry<std::string>("stringenum", 's',
                          "Number in range 1-3",
                          text2, {"aa", "bb", "cc"}, IFX_OPTION_SET_CLEAR);
-//    opt.addOptEntry<std::string>("text", 't', "anything",
-//                                 "Any text is accepted",
-//                                 text, IFX_OPTION_SET_CLEAR, validateText);
+    opt.addOptEntry<std::string>("text", 't', "anything",
+                                 "Any text is accepted",
+                                 text, IFX_OPTION_SET_CLEAR, validateText);
 
     retVal = opt.parseOpt(argc, argv);
 
