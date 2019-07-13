@@ -21,13 +21,9 @@ private:
     unsigned int *mRefCount;
 
 public:
-    SharedPtr(T *ptr = nullptr) : mPtr(ptr), mRefCount(new unsigned int(0u))
-    {
-        if (mPtr != nullptr)
-        {
-            (*mRefCount)++;
-        }
-    }
+    SharedPtr(T *ptr = nullptr) : mPtr(ptr),
+                                  mRefCount((ptr == nullptr) ? nullptr : new unsigned int(1u))
+    { }
 
     SharedPtr(const SharedPtr &src) noexcept : mPtr(src.mPtr), mRefCount(src.mRefCount)
     {
@@ -37,17 +33,29 @@ public:
         }
     }
 
+    SharedPtr(SharedPtr &&src) noexcept : mPtr(src.mPtr), mRefCount(src.mRefCount)
+    {
+        if (mPtr != nullptr)
+        {
+            src.mPtr      = nullptr;
+            src.mRefCount = nullptr;
+        }
+    }
+
     virtual ~SharedPtr() noexcept
     {
-        if (*mRefCount > 0u && mPtr != nullptr)
+        if (mPtr != nullptr)
         {
             (*mRefCount)--;
 
             if (*mRefCount == 0u)
             {
+                // no other references, may delete
                 delete mPtr; // TODO: custom deleter
-                mPtr = nullptr;
                 delete mRefCount;
+                mPtr      = nullptr;
+                mRefCount = nullptr;
+
             }
         }
     }
@@ -72,26 +80,28 @@ public:
     {
         if (ptr != mPtr)  // protection from self-copying
         {
-            if (*mRefCount > 0u && mPtr != nullptr)
+            if (mPtr != nullptr)
             {
                 (*mRefCount)--;
 
                 if (*mRefCount == 0u)
                 {
+                    // no other references, may delete
                     delete mPtr; // TODO: custom deleter
+                    delete mRefCount;
                 }
             }
 
-            if (*mRefCount > 0u) // there are other references, need to create new control data
+            if (ptr != nullptr)
             {
-                mRefCount = new unsigned int(0u);
+                mRefCount = new unsigned int(1u);
+            }
+            else
+            {
+                mRefCount = nullptr;
             }
 
             mPtr = ptr;
-            if (ptr != nullptr)
-            {
-                *mRefCount++;
-            }
         }
 
         return *this;
@@ -99,9 +109,10 @@ public:
 
     SharedPtr& operator=(SharedPtr& src) noexcept
     {
-        if (&src != this)  // protection from self-copying
+        if (   &src != this                 // protection from self-copying
+            && mRefCount != src.mRefCount)  // protection from another reference to the same pointer
         {
-            if (*mRefCount > 0u && mPtr != nullptr)
+            if (mPtr != nullptr)
             {
                 (*mRefCount)--;
 
@@ -111,14 +122,10 @@ public:
                     delete mRefCount;
                 }
             }
-            else
-            {
-                delete mRefCount;
-            }
 
             mPtr      = src.mPtr;
             mRefCount = src.mRefCount;
-            if (mPtr != nullptr)
+            if (mRefCount != nullptr)
             {
                 (*mRefCount)++;
             }
@@ -129,12 +136,12 @@ public:
 
     T& operator*() const noexcept
     {
-        return *mPtr;
+        return *mPtr; // no except, segmentation fault when mPtr == nullptr
     }
 
     T* operator->() const noexcept
     {
-        return mPtr;
+        return mPtr; // no except, segmentation fault when mPtr == nullptr
     }
 };
 
