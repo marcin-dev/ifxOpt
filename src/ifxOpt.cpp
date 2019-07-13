@@ -15,6 +15,8 @@
 namespace ifx
 {
 
+#define ENTRIES_VECTORS_INITIAL_CAPACITY    (10)  // to avoid re-allocation when adding elements
+
 #define OPTIONS_HELP_LEN_INDENT_START   ((size_t)2)
 #define OPTIONS_HELP_LEN_INDENT_END     ((size_t)26)
 
@@ -25,7 +27,10 @@ Opt::Opt(OptionSet options, const std::string helpHeader, std::string helpEndnot
   helpEndnote(helpEndnote),
   mAssignCharAllowed(IFX_OPTION_CHECK(options, IFX_OPT_ALLOW_ARG_ASSIGN_CHAR)),
   mNoExitOnError    (IFX_OPTION_CHECK(options, IFX_OPT_NO_EXIT_ON_ERROR))
-{ }
+{
+    mEntries.reserve(ENTRIES_VECTORS_INITIAL_CAPACITY);
+    mUsedEntries.reserve(ENTRIES_VECTORS_INITIAL_CAPACITY);
+}
 
 Opt::~Opt()
 { }

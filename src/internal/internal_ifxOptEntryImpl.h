@@ -71,7 +71,6 @@ int OptEntry<T>::parseValue(const std::string &valStr)
         if (   false == static_cast<bool>(mValidatorFn) // if there is no function provided
             || true  == mValidatorFn(value))            // or if the validation succeeded
         {
-            IFX_LOG_ERR("mChoices.empty(): " << mChoices.empty());
             if (   mChoices.empty() == true                // if there are no choices provided
                 || std::find(mChoices.begin(), mChoices.end(), value) != mChoices.end()) // value found among choices
             {
