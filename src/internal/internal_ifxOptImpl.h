@@ -119,11 +119,11 @@ int Opt::addOptEntry(const std::string  optLong,
                                          OptionSet          options = IFX_OPTION_SET_CLEAR, \
                                          std::function<bool(type)> validatorFn = nullptr);  \
     template int Opt::addOptEntry<type>(const std::string   optLong,                \
-                                          const char          optShort,             \
-                                          const std::string   helpString,           \
-                                          type               &target,               \
-                                          std::vector<type>   choices,              \
-                                          OptionSet           options = IFX_OPTION_SET_CLEAR)
+                                        const char          optShort,               \
+                                        const std::string   helpString,             \
+                                        type               &target,                 \
+                                        std::vector<type>   choices,                \
+                                        OptionSet           options = IFX_OPTION_SET_CLEAR)
 } /* namespace ifx */
 
 #endif /* INTERNAL_IFXOPT_IMPL_H */

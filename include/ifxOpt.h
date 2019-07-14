@@ -28,6 +28,7 @@ private:
     const std::string helpEndnote;
     const bool  mAssignCharAllowed;         // can be configured, tells if there can be a '=' character before option and value arguments
     const bool  mNoExitOnError;             // can be configured, tells if the program should exit on parsing error
+    const bool  mEnforceStrictOrder;        // can be configured, tells if options and arguments must be given in strict order
 
     const char *getOption(const char* in, std::string &argStr, char &argChar);
 

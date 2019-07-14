@@ -30,12 +30,12 @@ OptEntry<T>::OptEntry(const std::string  optLong,
 
 template <typename T>
 OptEntry<T>::OptEntry(const std::string  optLong,
-                         const char         optShort,
-                         const std::string  helpString,
-                         T                 &target,
-                         std::vector<T>   &&choices,
-                         OptionSet          options)
-                         : OptEntryBase(optLong, optShort, genValNameFromChoices(choices), helpString, options), mTarget(target), mValidatorFn(nullptr), mChoices(choices)
+                      const char         optShort,
+                      const std::string  helpString,
+                      T                 &target,
+                      std::vector<T>   &&choices,
+                      OptionSet          options)
+                      : OptEntryBase(optLong, optShort, genValNameFromChoices(choices), helpString, options), mTarget(target), mValidatorFn(nullptr), mChoices(choices)
 { }
 
 template <typename T>
@@ -47,7 +47,6 @@ std::string OptEntry<T>::genValNameFromChoices(std::vector<T> &choices)
 {
     std::string valName;
 
-    //for (std::vector<T>::iterator it = choices.begin(); it != choices.end(); ++it)
     for (T &choice : choices)
     {
         valName += toString(choice) + "|";

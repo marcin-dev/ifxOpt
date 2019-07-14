@@ -10,20 +10,18 @@
 
 #include <string>
 
+#include "ifxArgEntryBase.h"
 #include "ifxOptResultCodes.h"
 #include "ifxOptOptionCodes.h"
 
 namespace ifx
 {
 
-class OptEntryBase
+class OptEntryBase : public ArgEntryBase
 {
 private:
-    const std::string  mHelpString;
-    const std::string  mValName;
     const std::string  mOptLong;
     const char         mOptShort;
-    const bool         mMandatory;
 
 public:
     OptEntryBase(const std::string  optLong,
@@ -34,12 +32,9 @@ public:
 
     virtual ~OptEntryBase();
 
-    void getUsageString(std::string &optionUsageString) const;
-    const std::string &getHelpString()  const;
-    const std::string &getValName()     const;
+    virtual void getUsageString(std::string &optionUsageString) const;
     const std::string &getOptLong()     const;
     const char        &getOptShort()    const;
-    const bool        &isMandatory()    const;
 
     int parseOpt(const std::string &argStr, const char argShort);
 

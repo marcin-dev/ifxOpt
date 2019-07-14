@@ -5,7 +5,6 @@
  * @author man
  */
 
-#include <algorithm>
 #include <memory>
 
 #include <ifxOpt.h>
@@ -25,8 +24,9 @@ Opt::Opt(OptionSet options, const std::string helpHeader, std::string helpEndnot
   mUsedEntries(),
   helpHeader (helpHeader),
   helpEndnote(helpEndnote),
-  mAssignCharAllowed(IFX_OPTION_CHECK(options, IFX_OPT_ALLOW_ARG_ASSIGN_CHAR)),
-  mNoExitOnError    (IFX_OPTION_CHECK(options, IFX_OPT_NO_EXIT_ON_ERROR))
+  mAssignCharAllowed (IFX_OPTION_CHECK(options, IFX_OPT_ALLOW_ARG_ASSIGN_CHAR)),
+  mNoExitOnError     (IFX_OPTION_CHECK(options, IFX_OPT_NO_EXIT_ON_ERROR)),
+  mEnforceStrictOrder(IFX_OPTION_CHECK(options, IFX_OPT_STRICT_ORDER))
 {
     mEntries.reserve(ENTRIES_VECTORS_INITIAL_CAPACITY);
     mUsedEntries.reserve(ENTRIES_VECTORS_INITIAL_CAPACITY);

@@ -22,8 +22,8 @@ typedef uint32_t OptionSet;
 #define  IFX_OPTION_CHECK(optSet, option)       (((optSet) & (option)) != 0u)
 
 #define  IFX_OPT_ALLOW_ARG_ASSIGN_CHAR          IFX_OPTION_VAL(0u)
-#define  IFX_OPT_STRICT_ORDER                   IFX_OPTION_VAL(1u) // TODO: implement
-#define  IFX_OPT_NO_EXIT_ON_ERROR               IFX_OPTION_VAL(2u)
+#define  IFX_OPT_NO_EXIT_ON_ERROR               IFX_OPTION_VAL(1u)
+#define  IFX_OPT_STRICT_ORDER                   IFX_OPTION_VAL(2u)
 
 #define  IFX_OPT_ENTRY_MANDATORY                IFX_OPTION_VAL(0u)
 #define  IFX_OPT_ENTRY_GROUP_MANDATORY_EX       IFX_OPTION_VAL(1u) // TODO: implement

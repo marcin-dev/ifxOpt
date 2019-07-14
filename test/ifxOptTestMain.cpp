@@ -34,7 +34,7 @@ static const char *helpEndnote =
 
 int parseOpt(int argc, const char **argv)
 {
-    //ifx::OptionSet optionSet = IFX_OPT_ALLOW_ARG_ASSIGN_CHAR | IFX_OPT_NO_EXIT_ON_ERROR;
+    //ifx::OptionSet optionSet = IFX_OPT_ALLOW_ARG_ASSIGN_CHAR | IFX_OPT_NO_EXIT_ON_ERROR | IFX_OPT_STRICT_ORDER;
     ifx::OptionSet optionSet = IFX_OPT_ALLOW_ARG_ASSIGN_CHAR;
     ifx::Opt opt(optionSet, "Option Parser ifx::Opt test program", helpEndnote);
     int number1 = -50;
@@ -60,7 +60,7 @@ int parseOpt(int argc, const char **argv)
                          "Number in range 1-3",
                          number2, {1,2,3,-1}, IFX_OPTION_SET_CLEAR);
 
-    opt.addOptEntry<int>("charenum", 'c',
+    opt.addOptEntry<int>("", 'c',
                          "Number in range 1-3",
                          number3, test3, IFX_OPTION_SET_CLEAR);
 
