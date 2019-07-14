@@ -26,39 +26,43 @@ OptEntryBase::~OptEntryBase()
 { }
 
 
-void OptEntryBase::getUsageString(std::string &optionUsageString) const
+const std::string &OptEntryBase::getUsageString()
 {
-    bool addPipeChar = false;
-    optionUsageString.clear();
-
-    if (mOptShort != '\0')
+    if (mUsageString.empty() == true)
     {
-        optionUsageString += "-";
-        optionUsageString += mOptShort;
-        addPipeChar = true;
-    }
+        bool addPipeChar = false;
 
-    if (mOptLong.empty() == false)
-    {
-        if (addPipeChar == true)
+        if (mOptShort != '\0')
         {
-            optionUsageString += '|';
+            mUsageString += "-";
+            mUsageString += mOptShort;
+            addPipeChar = true;
         }
-        optionUsageString += "--";
-        optionUsageString += mOptLong;
-    }
+
+        if (mOptLong.empty() == false)
+        {
+            if (addPipeChar == true)
+            {
+                mUsageString += '|';
+            }
+            mUsageString += "--";
+            mUsageString += mOptLong;
+        }
 
 
-    if (this->isFlag() == true)
-    {
-        // Value argument is optional only for FLAG entries (boolean)
-        optionUsageString.append(" [" + getValName() + "]");
+        if (this->isFlag() == true)
+        {
+            // Value argument is optional only for FLAG entries (boolean)
+            mUsageString.append(" [" + getValName() + "]");
+        }
+        else
+        {
+            // Value is mandatory for all entries by default
+            mUsageString.append(" <" + getValName() + ">");
+        }
     }
-    else
-    {
-        // Value is mandatory for all entries by default
-        optionUsageString.append(" <" + getValName() + ">");
-    }
+
+    return mUsageString;
 }
 
 const std::string &OptEntryBase::getOptLong()     const { return this->mOptLong;     }

@@ -9,6 +9,7 @@
 
 #include <ifxOpt.h>
 
+#include "internal/ifxInternalUtils.h"
 #include "internal/ifxDbg.h"
 
 namespace ifx
@@ -20,7 +21,8 @@ namespace ifx
 #define OPTIONS_HELP_LEN_INDENT_END     ((size_t)26)
 
 Opt::Opt(OptionSet options, const std::string helpHeader, std::string helpEndnote)
-: mEntries(),
+: mId(assignGlobalId()),
+  mEntries(),
   mUsedEntries(),
   helpHeader (helpHeader),
   helpEndnote(helpEndnote),
@@ -89,10 +91,7 @@ int Opt::verifyAfterParsing(const char *argv0) const
             if (e.refCount() == 1)
             {
                 // Single reference means that it is not consumed, error
-                std::string optionUsageString;
-                e->getUsageString(optionUsageString);
-
-                IFX_LOG_ERR(std::string("The following mandatory option is missing: ") + optionUsageString);
+                IFX_LOG_ERR("The following mandatory option is missing: " << e->getUsageString());
 
                 ret = IFX_OPT_NOT_FOUND;
             }
@@ -119,9 +118,7 @@ std::string *Opt::generateHelp(const char *argv0, std::string headerStr, std::st
 
         for (auto &&e : mEntries)
         {
-            std::string optionUsageString;
-
-            e->getUsageString(optionUsageString);
+            const std::string &optionUsageString = e->getUsageString();
 
             if (e->isMandatory() == true)
             {
@@ -132,20 +129,20 @@ std::string *Opt::generateHelp(const char *argv0, std::string headerStr, std::st
                 *help += " [" + optionUsageString + "]";
             }
 
-            if (optionUsageString.length() < (OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START))
-            {
-                // Fill with spaces up to (OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START)
-                optionUsageString.append(OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START - optionUsageString.length(), ' ');
-            }
-            else
-            {
-                optionUsageString.push_back('\n');
-                optionUsageString.append(OPTIONS_HELP_LEN_INDENT_END, ' ');
-            }
-
             optionsHelp.append(1, '\n');
             optionsHelp.append(OPTIONS_HELP_LEN_INDENT_START, ' ');
             optionsHelp += optionUsageString;
+
+            if (optionUsageString.length() < (OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START))
+            {
+                // Fill with spaces up to (OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START)
+                optionsHelp.append(OPTIONS_HELP_LEN_INDENT_END - OPTIONS_HELP_LEN_INDENT_START - optionUsageString.length(), ' ');
+            }
+            else
+            {
+                optionsHelp.push_back('\n');
+                optionsHelp.append(OPTIONS_HELP_LEN_INDENT_END, ' ');
+            }
 
             // Need to shift each newline to the OPTIONS_HELP_LEN_INDENT_END
             // to keep nice alignment
@@ -211,6 +208,7 @@ int Opt::parseOpt(int argc, const char* argv[])
 {
     int retVal = IFX_OPT_RESULT_SUCCESS;
     int result;
+    ArgEntryBase *lastArg = nullptr;
     const char  *argvPtr;
     std::string  argStr;
     std::string  valStr;
@@ -241,14 +239,28 @@ int Opt::parseOpt(int argc, const char* argv[])
 
             for (auto&& e : mEntries)
             {
-                IFX_LOG_DBG("optEntry START");
+                IFX_LOG_DBG("optEntry parseOpt START");
                 result = e->parseOpt(argStr, argChar);
-                IFX_LOG_DBG("optEntry END");
+                IFX_LOG_DBG("optEntry parseOpt END");
 
                 if (result != IFX_OPT_RESULT_SUCCESS)
                 {
                     continue;
                 }
+
+                if (   mEnforceStrictOrder == true
+                    && lastArg != nullptr
+                    && lastArg->getId() > e->getId())
+                {
+                    // Incorrect arguments order, need to print error and exit
+                    IFX_LOG_ERR("Wrong arguments order, option "  << e->getUsageString()
+                                << " need to be provided before " << lastArg->getUsageString());
+
+                    result = IFX_OPT_ERROR_WRONG_ARG_ORDER;
+                    break;
+                }
+
+                lastArg = e.get();
 
                 // Additional checks for '=' character and no space before value for short options
                 if (this->mAssignCharAllowed == true && *argvPtr == '=')    // condition for both short and long options
@@ -285,19 +297,11 @@ int Opt::parseOpt(int argc, const char* argv[])
                         {
                             IFX_LOG_DBG("Opt::parseOpt no flag entry, raising error");
 
-                            // Value argument not found, display the error, print help and exit
+                            // Value argument not found, display the error, exit entries loop
                             IFX_LOG_ERR(std::string("No value found for option: ") + optArgv);
 
-                            if (retVal == IFX_OPT_RESULT_SUCCESS)
-                            {
-                                retVal = IFX_OPT_VALUE_NOT_FOUND;
-                            }
-
-                            // Need to exit the loop if there is error+exit condition
-                            if (mNoExitOnError == false)
-                            {
-                                break;
-                            }
+                            result = IFX_OPT_VALUE_NOT_FOUND;
+                            break; // no value == no point in continuing
                         }
                     }
                 }
@@ -317,6 +321,7 @@ int Opt::parseOpt(int argc, const char* argv[])
                                                                             //   EXAMPLE2: --<FLAG> <SOMETHING> will pass and <FLAG> will be set to true;
                                                                             //             (in this case <SOMETHING> is considered as next option)
                 {
+                    i--;  // this is crucial to prevent one item loss
                     result = IFX_OPT_RESULT_SUCCESS;
                 }
 
@@ -327,43 +332,26 @@ int Opt::parseOpt(int argc, const char* argv[])
 
                     // Copy the entry pointer to consumed list
                     this->mUsedEntries.push_back(e);
-
-                    break;
                 }
                 else
                 {
                     IFX_LOG_ERR(std::string("Parsing value error, option: ") + optArgv + ", incorrect value string: " + valStr);
-                    if (retVal == IFX_OPT_RESULT_SUCCESS)
-                    {
-                        retVal = result;
-                    }
-
-                    // Need to exit the loop if there is error+exit condition
-                    if (mNoExitOnError == false)
-                    {
-                        break;
-                    }
                 }
-            }
 
-            if (result == IFX_OPT_NOT_MACHING_OPTION)
+                // Reached the end == always break
+                break;
+            } // end for mEntries
+
+            if (result != IFX_OPT_RESULT_SUCCESS)
             {
-                // Option not found, display the error, print help and exit
-                IFX_LOG_ERR(std::string("Unrecognized option: ") + optArgv);
+                // Option not found or another error, display it, print help and exit
+                IFX_LOG_ERR("Cannot parse option: " << optArgv << ", error code: " << result);
 
                 if (retVal == IFX_OPT_RESULT_SUCCESS)
                 {
                     retVal = result;
                 }
 
-                // Need to exit the main loop if there is error+exit condition
-                if (mNoExitOnError == false)
-                {
-                    break;
-                }
-            }
-            else if (result != IFX_OPT_RESULT_SUCCESS)
-            {
                 // Need to exit the main loop if there is error+exit condition
                 if (mNoExitOnError == false)
                 {

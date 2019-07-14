@@ -20,6 +20,7 @@ namespace ifx
 class OptEntryBase : public ArgEntryBase
 {
 private:
+    std::string        mUsageString;
     const std::string  mOptLong;
     const char         mOptShort;
 
@@ -32,7 +33,7 @@ public:
 
     virtual ~OptEntryBase();
 
-    virtual void getUsageString(std::string &optionUsageString) const;
+    virtual const std::string &getUsageString();
     const std::string &getOptLong()     const;
     const char        &getOptShort()    const;
 

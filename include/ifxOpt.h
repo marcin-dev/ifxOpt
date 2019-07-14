@@ -22,6 +22,7 @@ namespace ifx
 class Opt
 {
 private:
+    const unsigned int mId;
     std::vector<SharedPtr<OptEntryBase>> mEntries;
     std::vector<SharedPtr<OptEntryBase>> mUsedEntries;
     const std::string helpHeader;

@@ -7,6 +7,7 @@
 
 #include <ifxArgEntryBase.h>
 
+#include "internal/ifxInternalUtils.h"
 #include "internal/ifxDbg.h"
 
 namespace ifx
@@ -15,7 +16,8 @@ namespace ifx
 ArgEntryBase::ArgEntryBase(const std::string  valName,
                            const std::string  helpString,
                            OptionSet          options)
-                           : mHelpString(helpString),
+                           : mId(assignGlobalId()),
+                             mHelpString(helpString),
                              mValName(valName),
                              mMandatory(IFX_OPTION_CHECK(options, IFX_OPT_ENTRY_MANDATORY))
 { }
@@ -24,13 +26,14 @@ ArgEntryBase::~ArgEntryBase()
 { }
 
 
-void ArgEntryBase::getUsageString(std::string &optionUsageString) const
+const std::string &ArgEntryBase::getUsageString()
 {
-    optionUsageString = mValName;
+    return mValName;
 }
 
-const std::string &ArgEntryBase::getHelpString()  const { return this->mHelpString;  }
-const std::string &ArgEntryBase::getValName()     const { return this->mValName;     }
-const bool        &ArgEntryBase::isMandatory()    const { return this->mMandatory;   }
+const unsigned int  &ArgEntryBase::getId()          const { return this->mId;  }
+const std::string   &ArgEntryBase::getHelpString()  const { return this->mHelpString;  }
+const std::string   &ArgEntryBase::getValName()     const { return this->mValName;     }
+const bool          &ArgEntryBase::isMandatory()    const { return this->mMandatory;   }
 
 } /* namespace ifx */

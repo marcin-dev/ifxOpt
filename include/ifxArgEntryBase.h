@@ -19,6 +19,7 @@ namespace ifx
 class ArgEntryBase
 {
 private:
+    const unsigned int mId;
     const std::string  mHelpString;
     const std::string  mValName;
     const bool         mMandatory;
@@ -30,10 +31,11 @@ public:
 
     virtual ~ArgEntryBase();
 
-    virtual void getUsageString(std::string &optionUsageString) const;
-    const std::string &getHelpString()  const;
-    const std::string &getValName()     const;
-    const bool        &isMandatory()    const;
+    virtual const std::string &getUsageString();
+    const unsigned int  &getId()          const;
+    const std::string   &getHelpString()  const;
+    const std::string   &getValName()     const;
+    const bool          &isMandatory()    const;
 
     virtual int parseValue(const std::string &valStr) = 0;
 };

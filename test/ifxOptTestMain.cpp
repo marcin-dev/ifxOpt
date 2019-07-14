@@ -34,8 +34,8 @@ static const char *helpEndnote =
 
 int parseOpt(int argc, const char **argv)
 {
-    //ifx::OptionSet optionSet = IFX_OPT_ALLOW_ARG_ASSIGN_CHAR | IFX_OPT_NO_EXIT_ON_ERROR | IFX_OPT_STRICT_ORDER;
-    ifx::OptionSet optionSet = IFX_OPT_ALLOW_ARG_ASSIGN_CHAR;
+    ifx::OptionSet optionSet = IFX_OPT_ALLOW_ARG_ASSIGN_CHAR | IFX_OPT_NO_EXIT_ON_ERROR | IFX_OPT_STRICT_ORDER;
+    //ifx::OptionSet optionSet = IFX_OPT_ALLOW_ARG_ASSIGN_CHAR;
     ifx::Opt opt(optionSet, "Option Parser ifx::Opt test program", helpEndnote);
     int number1 = -50;
     int number2 = -60;
