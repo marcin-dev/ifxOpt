@@ -5,6 +5,7 @@ set(source_files
     ifxOpt.cpp
     ifxArgEntryBase.cpp
     ifxOptEntryBase.cpp
+    internal/ifxArgEntry.cpp
     internal/ifxInternalUtils.cpp
     internal/ifxOptEntry_int.cpp
     internal/ifxOptEntry_string.cpp

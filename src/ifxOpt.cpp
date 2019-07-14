@@ -9,6 +9,7 @@
 
 #include <ifxOpt.h>
 
+#include "internal/ifxArgEntry.h"
 #include "internal/ifxInternalUtils.h"
 #include "internal/ifxDbg.h"
 
@@ -24,6 +25,8 @@ Opt::Opt(OptionSet options, const std::string helpHeader, std::string helpEndnot
 : mId(assignGlobalId()),
   mEntries(),
   mUsedEntries(),
+  mArgs(),
+  mUsedArgs(),
   helpHeader (helpHeader),
   helpEndnote(helpEndnote),
   mAssignCharAllowed (IFX_OPTION_CHECK(options, IFX_OPT_ALLOW_ARG_ASSIGN_CHAR)),
@@ -32,6 +35,8 @@ Opt::Opt(OptionSet options, const std::string helpHeader, std::string helpEndnot
 {
     mEntries.reserve(ENTRIES_VECTORS_INITIAL_CAPACITY);
     mUsedEntries.reserve(ENTRIES_VECTORS_INITIAL_CAPACITY);
+    mArgs.reserve(ENTRIES_VECTORS_INITIAL_CAPACITY);
+    mUsedArgs.reserve(ENTRIES_VECTORS_INITIAL_CAPACITY);
 }
 
 Opt::~Opt()
@@ -82,7 +87,7 @@ int Opt::verifyAfterParsing(const char *argv0) const
 {
     int ret = IFX_OPT_RESULT_SUCCESS;
 
-    // Check for missed mandatory entries
+    // Check for missed mandatory option entries
     for (auto &&e : this->mEntries)
     {
         if (e->isMandatory() == true)
@@ -94,6 +99,25 @@ int Opt::verifyAfterParsing(const char *argv0) const
                 IFX_LOG_ERR("The following mandatory option is missing: " << e->getUsageString());
 
                 ret = IFX_OPT_NOT_FOUND;
+            }
+        }
+    }
+
+    // Check for missed mandatory non-option argument entries
+    for (auto &&a : this->mArgs)
+    {
+        if (a->isMandatory() == true)
+        {
+            // Check if the mandatory non-option argument is consumed
+            if (a.refCount() == 1)
+            {
+                // Single reference means that it is not consumed, error
+                IFX_LOG_ERR("The following mandatory non-option argument is missing: " << a->getUsageString());
+
+                if (ret == IFX_OPT_RESULT_SUCCESS)
+                {
+                    ret = IFX_OPT_ARG_NOT_FOUND;
+                }
             }
         }
     }
@@ -115,6 +139,8 @@ std::string *Opt::generateHelp(const char *argv0, std::string headerStr, std::st
         help->append("Usage: ").append(argv0);
 
         std::string optionsHelp = "Options:";
+
+        // TODO: How to handle non-option arguments?
 
         for (auto &&e : mEntries)
         {
@@ -177,6 +203,8 @@ void Opt::printHelpAndExit(const char *argv0, int exitStatus)
 
     mUsedEntries.clear();
     mEntries.clear();
+    mUsedArgs.clear();
+    mArgs.clear();
 
     IFX_LOG_DBG("Exiting with code: " << exitStatus);
     exit(exitStatus);
@@ -194,6 +222,8 @@ void Opt::printHelpAndExitConditionally(const char *argv0, int exitStatus)
     {
         mUsedEntries.clear();
         mEntries.clear();
+        mUsedArgs.clear();
+        mArgs.clear();
 
         IFX_LOG_DBG("Exiting with code: " << exitStatus);
         exit(exitStatus);
@@ -201,19 +231,41 @@ void Opt::printHelpAndExitConditionally(const char *argv0, int exitStatus)
 }
 
 // ****************************************************************************
-// Option type generic templates are defined in internal/internal_ifxOpt.h
+// Option type generic templates are defined in internal/internal_ifxOptImpl.h
 // ****************************************************************************
+
+int Opt::addArgEntry(const std::string  valName,
+                     const std::string  helpString,
+                     std::string       &target,
+                     OptionSet          options,
+                     std::function<int(const std::string &)> notifierFn)
+{
+    int retVal = IFX_OPT_RESULT_SUCCESS;
+
+    ArgEntryBase *arg = new ArgEntry(valName, helpString, target, options, std::move(notifierFn));
+    if (arg != nullptr)
+    {
+        this->mArgs.push_back(arg);
+    }
+    else
+    {
+        retVal = IFX_OPT_ERROR_OUT_OF_MEMORY;
+    }
+
+    return retVal;
+}
 
 int Opt::parseOpt(int argc, const char* argv[])
 {
     int retVal = IFX_OPT_RESULT_SUCCESS;
     int result;
+    auto          argsIt  = mArgs.begin();
     ArgEntryBase *lastArg = nullptr;
-    const char  *argvPtr;
-    std::string  argStr;
-    std::string  valStr;
-    const char  *optArgv;
-    char         argChar;
+    const char   *argvPtr;
+    std::string   argStr;
+    std::string   valStr;
+    const char   *optArgv;
+    char          argChar;
 
     IFX_LOG_DBG("Opt::parseOpt START, argc = " << argc);
 
@@ -248,13 +300,14 @@ int Opt::parseOpt(int argc, const char* argv[])
                     continue;
                 }
 
+                // Check for the strict order
                 if (   mEnforceStrictOrder == true
                     && lastArg != nullptr
                     && lastArg->getId() > e->getId())
                 {
                     // Incorrect arguments order, need to print error and exit
-                    IFX_LOG_ERR("Wrong arguments order, option "  << e->getUsageString()
-                                << " need to be provided before " << lastArg->getUsageString());
+                    IFX_LOG_ERR("Wrong arguments order, option \""  << e->getUsageString()
+                                << "\" need to be provided before \"" << lastArg->getUsageString() << "\"");
 
                     result = IFX_OPT_ERROR_WRONG_ARG_ORDER;
                     break;
@@ -298,7 +351,7 @@ int Opt::parseOpt(int argc, const char* argv[])
                             IFX_LOG_DBG("Opt::parseOpt no flag entry, raising error");
 
                             // Value argument not found, display the error, exit entries loop
-                            IFX_LOG_ERR(std::string("No value found for option: ") + optArgv);
+                            IFX_LOG_ERR("No value found for option: " << optArgv);
 
                             result = IFX_OPT_VALUE_NOT_FOUND;
                             break; // no value == no point in continuing
@@ -335,7 +388,7 @@ int Opt::parseOpt(int argc, const char* argv[])
                 }
                 else
                 {
-                    IFX_LOG_ERR(std::string("Parsing value error, option: ") + optArgv + ", incorrect value string: " + valStr);
+                    IFX_LOG_ERR("Parsing value error, option: " << optArgv << ", incorrect value string: " << valStr);
                 }
 
                 // Reached the end == always break
@@ -362,7 +415,61 @@ int Opt::parseOpt(int argc, const char* argv[])
         else
         {
             // Option not found, we have got string to store
-            IFX_LOG_DBG("Opt::parseOpt option not found, argv: " << argStr << ", short: " << argChar);
+            IFX_LOG_DBG("Opt::parseOpt non-option argument found, argv: " << argStr);
+
+            if (mArgs.empty() == true)
+            {
+                IFX_LOG_ERR("Non-option arguments are not allowed (not added)");
+                if (retVal == IFX_OPT_RESULT_SUCCESS)
+                {
+                    retVal = IFX_OPT_NON_OPT_ARGS_ADDED;
+                }
+            }
+            else
+            {
+                // Check for the strict order
+                if (   mEnforceStrictOrder == true
+                    && lastArg != nullptr
+                    && lastArg->getId() > (*argsIt)->getId())
+                {
+                    // Incorrect arguments order, need to print error and exit
+                    IFX_LOG_ERR("Wrong arguments order, non-option argument \""  << (*argsIt)->getUsageString()
+                                << "\" need to be provided before \"" << lastArg->getUsageString() << "\"");
+                    if (retVal == IFX_OPT_RESULT_SUCCESS)
+                    {
+                        retVal = IFX_OPT_ERROR_WRONG_ARG_ORDER;
+                    }
+                }
+                else
+                {
+                    lastArg = argsIt->get();
+
+                    // Store the argument
+                    result = lastArg->parseValue(argStr);
+                    if (result == IFX_OPT_RESULT_SUCCESS)
+                    {
+                        this->mUsedArgs.push_back(*argsIt);
+                    }
+                    else if (retVal == IFX_OPT_RESULT_SUCCESS)
+                    {
+                        retVal = result;
+                    }
+
+                    // Wrap around the vector
+                    argsIt++;
+                    if (argsIt == mArgs.end())
+                    {
+                        argsIt = mArgs.begin();
+                    }
+                }
+
+                // Need to exit the main loop if there is error+exit condition
+                if (   retVal != IFX_OPT_RESULT_SUCCESS
+                    && mNoExitOnError == false)
+                {
+                    break;
+                }
+            }
         }
     }
 

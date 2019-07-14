@@ -22,11 +22,13 @@ namespace ifx
 class Opt
 {
 private:
-    const unsigned int mId;
-    std::vector<SharedPtr<OptEntryBase>> mEntries;
-    std::vector<SharedPtr<OptEntryBase>> mUsedEntries;
-    const std::string helpHeader;
-    const std::string helpEndnote;
+    const unsigned int mId;                                 // global object id
+    std::vector<SharedPtr<OptEntryBase>> mEntries;          // option arguments added by user
+    std::vector<SharedPtr<OptEntryBase>> mUsedEntries;      // all recognized option argument entries are added here
+    std::vector<SharedPtr<ArgEntryBase>> mArgs;             // non-option argument entries added by user
+    std::vector<SharedPtr<ArgEntryBase>> mUsedArgs;         // all recognized non-option argument entries are added here
+    const std::string helpHeader;                           // header passed by user or empty string
+    const std::string helpEndnote;                          // footer passed by user of empty string
     const bool  mAssignCharAllowed;         // can be configured, tells if there can be a '=' character before option and value arguments
     const bool  mNoExitOnError;             // can be configured, tells if the program should exit on parsing error
     const bool  mEnforceStrictOrder;        // can be configured, tells if options and arguments must be given in strict order
@@ -71,6 +73,12 @@ public:
                     const T           *choices,
                     size_t             choicesSize,
                     OptionSet          options = IFX_OPTION_SET_CLEAR);
+
+    int addArgEntry(const std::string  valName,
+                    const std::string  helpString,
+                    std::string       &target,
+                    OptionSet          options = IFX_OPTION_SET_CLEAR,
+                    std::function<int(const std::string &)> notifierFn = nullptr);
 
     int parseOpt(int argc, const char* argv[]);
 

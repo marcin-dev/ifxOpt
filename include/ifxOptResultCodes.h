@@ -15,6 +15,8 @@ namespace ifx
 #define  IFX_OPT_NOT_MACHING_OPTION             (1)
 #define  IFX_OPT_NOT_FOUND                      (2)
 #define  IFX_OPT_VALUE_NOT_FOUND                (3)
+#define  IFX_OPT_NON_OPT_ARGS_ADDED             (4)
+#define  IFX_OPT_ARG_NOT_FOUND                  (5)
 
 #define  IFX_OPT_ERROR_INVALID_ARGUMENTS        (-1)
 #define  IFX_OPT_ERROR_OUT_OF_MEMORY            (-2)

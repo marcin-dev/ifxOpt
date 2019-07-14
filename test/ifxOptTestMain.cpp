@@ -28,6 +28,13 @@ bool validateText(std::string val)
     return true;
 }
 
+bool validateNonOptArgText(const std::string &val)
+{
+    std::cout << LOG_TAG "validateNonOptArgText " << val << std::endl;
+
+    return IFX_OPT_RESULT_SUCCESS;
+}
+
 static const char *helpEndnote =
 "Copyright: InFoX\n\
 2019";
@@ -35,6 +42,7 @@ static const char *helpEndnote =
 int parseOpt(int argc, const char **argv)
 {
     ifx::OptionSet optionSet = IFX_OPT_ALLOW_ARG_ASSIGN_CHAR | IFX_OPT_NO_EXIT_ON_ERROR | IFX_OPT_STRICT_ORDER;
+    //ifx::OptionSet optionSet = IFX_OPT_ALLOW_ARG_ASSIGN_CHAR | IFX_OPT_STRICT_ORDER;
     //ifx::OptionSet optionSet = IFX_OPT_ALLOW_ARG_ASSIGN_CHAR;
     ifx::Opt opt(optionSet, "Option Parser ifx::Opt test program", helpEndnote);
     int number1 = -50;
@@ -43,6 +51,9 @@ int parseOpt(int argc, const char **argv)
     int retVal;
     std::string text  = "not changed";
     std::string text2 = "not changed2";
+
+    std::string nonopttext1 = "not changed a1";
+    std::string nonopttext2 = "not changed a2";
 
 
     int  a[] = {1,2,3};
@@ -71,6 +82,14 @@ int parseOpt(int argc, const char **argv)
                                  "Any text is accepted",
                                  text, IFX_OPTION_SET_CLEAR, validateText);
 
+    opt.addArgEntry("noptarg1",
+                    "Any text is accepted",
+                    nonopttext1, IFX_OPT_ENTRY_MANDATORY, validateNonOptArgText);
+
+    opt.addArgEntry("noptarg2",
+                    "Any text is accepted",
+                    nonopttext2, IFX_OPTION_SET_CLEAR, validateNonOptArgText);
+
     retVal = opt.parseOpt(argc, argv);
 
     //if (retVal == IFX_OPT_RESULT_SUCCESS)
@@ -80,6 +99,8 @@ int parseOpt(int argc, const char **argv)
         std::cout << LOG_TAG "parsed number3: " << number3 << std::endl;
         std::cout << LOG_TAG "parsed text  : " << text  << std::endl;
         std::cout << LOG_TAG "parsed text  : " << text2 << std::endl;
+        std::cout << LOG_TAG "noptarg1 text  : " << nonopttext1  << std::endl;
+        std::cout << LOG_TAG "noptarg2 text  : " << nonopttext2 << std::endl;
     //}
 
     return retVal;
