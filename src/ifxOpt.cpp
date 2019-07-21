@@ -127,7 +127,10 @@ int Opt::verifyAfterParsing(const char *argv0) const
 
 std::string *Opt::generateHelp(const char *argv0, std::string headerStr, std::string footerStr) const
 {
-    std::string *help = new std::string();
+    auto          optsIt  = mEntries.begin();
+    auto          argsIt  = mArgs.begin();
+    ArgEntryBase *entry   = nullptr;
+    std::string  *help    = new std::string();
 
     if (help != nullptr)
     {
@@ -140,13 +143,41 @@ std::string *Opt::generateHelp(const char *argv0, std::string headerStr, std::st
 
         std::string optionsHelp = "Options:";
 
-        // TODO: How to handle non-option arguments?
-
-        for (auto &&e : mEntries)
+        // Go through both vectors at once using two iterators,
+        // check which entry was added first using assigned ids
+        while (   optsIt != mEntries.end()
+               || argsIt != mArgs.end() )
         {
-            const std::string &optionUsageString = e->getUsageString();
+            if (argsIt == mArgs.end())
+            {
+                // No more args, use option entries only
+                entry = optsIt->get();
+                optsIt++;
+            }
+            else if (optsIt == mEntries.end())
+            {
+                // No more options, use args entries only
+                entry = argsIt->get();
+                argsIt++;
+            }
+            else
+            {
+                // Both iterators are not at the end, check priorities by id
+                if ((*optsIt)->getId() < (*argsIt)->getId())
+                {
+                    entry = optsIt->get();
+                    optsIt++;
+                }
+                else
+                {
+                    entry = argsIt->get();
+                    argsIt++;
+                }
+            }
 
-            if (e->isMandatory() == true)
+            const std::string &optionUsageString = entry->getUsageString();
+
+            if (entry->isMandatory() == true)
             {
                 *help += " <" + optionUsageString + ">";
             }
@@ -172,7 +203,7 @@ std::string *Opt::generateHelp(const char *argv0, std::string headerStr, std::st
 
             // Need to shift each newline to the OPTIONS_HELP_LEN_INDENT_END
             // to keep nice alignment
-            for (auto it = e->getHelpString().cbegin() ; it != e->getHelpString().cend() ; it++ )
+            for (auto it = entry->getHelpString().cbegin() ; it != entry->getHelpString().cend() ; it++ )
             {
                 optionsHelp.append(1, *it);
                 if (*it == '\n')

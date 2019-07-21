@@ -42,6 +42,8 @@ private:
 
     // Non-copyable
     Opt(const Opt &);
+    // Non-copy-assignable
+    Opt& operator=(const Opt &);
 
 public:
     Opt(OptionSet options = IFX_OPTION_SET_CLEAR, const std::string helpHeader = std::string(), std::string helpEndnote = std::string());

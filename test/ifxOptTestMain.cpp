@@ -67,6 +67,10 @@ int parseOpt(int argc, const char **argv)
                                  "Any text is accepted",
                                  text, IFX_OPTION_SET_CLEAR);
 
+    opt.addArgEntry("noptarg1",
+                    "Any text is accepted",
+                    nonopttext1, IFX_OPT_ENTRY_MANDATORY, validateNonOptArgText);
+
     opt.addOptEntry<int>("enum", 'e',
                          "Number in range 1-3",
                          number2, {1,2,3,-1}, IFX_OPTION_SET_CLEAR);
@@ -82,12 +86,8 @@ int parseOpt(int argc, const char **argv)
                                  "Any text is accepted",
                                  text, IFX_OPTION_SET_CLEAR, validateText);
 
-    opt.addArgEntry("noptarg1",
-                    "Any text is accepted",
-                    nonopttext1, IFX_OPT_ENTRY_MANDATORY, validateNonOptArgText);
-
-    opt.addArgEntry("noptarg2",
-                    "Any text is accepted",
+    opt.addArgEntry("file",
+                    "Path to file to create",
                     nonopttext2, IFX_OPTION_SET_CLEAR, validateNonOptArgText);
 
     retVal = opt.parseOpt(argc, argv);
